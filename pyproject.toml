@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "ecstasy-sdk"
 version = "0.1.0"
 description = "Python SDK for Ecstasy API"
-readme = { text = "Python SDK for Ecstasy API.", content-type = "text/markdown" }
+readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 authors = [
@@ -58,6 +58,7 @@ packages = ["ecstasy_sdk"]
 
 [tool.ruff]
 line-length = 120
+target-version = "py312"
 lint.extend-select = [
     # pycodestyle
     "E",
@@ -94,4 +95,19 @@ lint.ignore = [
     "W291",
     # Blank line contains whitespace
     "W293",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"ecstasy_sdk/resources/*.py" = ["A003"]
+"ecstasy_sdk/async_resources/*.py" = ["A003"]
+
+[tool.black]
+line-length = 110
+target-version = ["py312"]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+    "mypy>=1.20.2",
+    "ruff>=0.15.12",
 ]
