@@ -61,40 +61,40 @@ MODEL_MODULES = {
         "Devices",
         "BulkDeviceCommandExecution",
         "BulkDeviceCommandExecutionResult",
-        "BulkCommandTaskResultSwagger",
-        "BulkCommandTaskStatusSwagger",
-        "ExecuteBulkDeviceCommandRequestSwagger",
-        "BulkCommandLaunchDeviceSwagger",
-        "BulkCommandLaunchResponseSwagger",
+        "BulkCommandTaskResult",
+        "BulkCommandTaskStatus",
+        "ExecuteBulkDeviceCommandRequest",
+        "BulkCommandLaunchDevice",
+        "BulkCommandLaunchResponse",
         "InterfacesComments",
         "BrassSession",
-        "CutBrasSessionSwagger",
-        "BrasSessionSwagger",
-        "BrasPairSessionResultSwagger",
-        "InterfaceWorkloadSwagger",
-        "DevicesInterfaceWorkloadSwagger",
-        "DevicesInterfaceWorkloadResultSwagger",
+        "CutBrasSession",
+        "BrasSession",
+        "BrasPairSessionResult",
+        "InterfaceWorkload",
+        "DevicesInterfaceWorkload",
+        "DevicesInterfaceWorkloadResult",
         "DeviceAuthGroup",
         "DeviceGroup",
         "DevicesDetail",
         "DevicesDetailUpdate",
         "UserDeviceAction",
-        "ChangeDescriptionRequestSwagger",
-        "ChangeDescriptionSwagger",
+        "ChangeDescriptionRequest",
+        "ChangeDescription",
         "ADSLProfile",
         "DeviceCommands",
-        "ConfigFileSwagger",
-        "DeviceInfoSwagger",
+        "ConfigFile",
+        "DeviceInfo",
         "PortDetailInfo",
-        "InterfaceDetailInfoSwagger",
-        "LinkToAnotherDeviceSwagger",
+        "InterfaceDetailInfo",
+        "LinkToAnotherDevice",
         "InterfaceComment",
-        "InterfaceInfoSwagger",
-        "InterfacesListSwagger",
-        "MacListSwagger",
-        "MacListResultSwagger",
+        "InterfaceInfo",
+        "InterfacesList",
+        "MacList",
+        "MacListResult",
         "DeviceMedia",
-        "DevicePoolStatusesSwagger",
+        "DevicePoolStatuses",
         "PortControl",
         "PoEPortStatus",
         "DeviceViewings",
@@ -104,9 +104,9 @@ MODEL_MODULES = {
     "gather": {
         "MacGatherScanTask",
         "MacGatherStatus",
-        "NodesSwagger",
-        "EdgesSwagger",
-        "MacTracerouteSwagger",
+        "Nodes",
+        "Edges",
+        "MacTraceroute",
     },
     "gpon": {
         "BuildingAddress",
@@ -487,8 +487,8 @@ def build_core_files(files: dict[str, str]) -> None:
         class EcstasyResponseValidationError(EcstasyError):
             """Ошибка валидации ответа API через Pydantic."""
         ''')
-    files["ecstasy_sdk/types.py"] = dedent('''\
-        """Типы и query-фильтры SDK."""
+    files["ecstasy_sdk/filters.py"] = dedent('''\
+        """Query-фильтры SDK."""
 
         from ecstasy_sdk.models.base import EcstasyModel
 
@@ -976,7 +976,7 @@ def build_resource_files(files: dict[str, str]) -> int:
                 lines.append(f"    {async_prefix}def {method_name}({signature}) -> {return_hint}:")
                 lines.append('        """Выполняет операцию Ecstasy API.')
                 lines.append("")
-                lines.append(f"        Swagger operationId: {operation_id}.")
+                lines.append(f"        operationId: {operation_id}.")
                 lines.append('        """')
                 lines.append("")
                 if path_params:

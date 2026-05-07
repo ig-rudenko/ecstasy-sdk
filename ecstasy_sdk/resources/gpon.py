@@ -36,7 +36,7 @@ class GponResource:
     def list_addresses_buildings(self) -> _list[BuildingAddress]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_addresses_buildings_list.
+        operationId: gpon_addresses_buildings_list.
         """
 
         path_params = None
@@ -53,7 +53,7 @@ class GponResource:
     def list_addresses_end3(self) -> _list[End3]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_addresses_end3_list.
+        operationId: gpon_addresses_end3_list.
         """
 
         path_params = None
@@ -70,7 +70,7 @@ class GponResource:
     def list_customers(self) -> _list[CommonCustomerSerializer]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_customers_list.
+        operationId: gpon_customers_list.
         """
 
         path_params = None
@@ -87,7 +87,7 @@ class GponResource:
     def get_customers(self, id_: str) -> CustomerDetail:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_customers_read.
+        operationId: gpon_customers_read.
         """
 
         path_params = {"id": id_}
@@ -104,7 +104,7 @@ class GponResource:
     def update_customers(self, id_: str, data: CustomerDetail) -> CustomerDetail:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_customers_update.
+        operationId: gpon_customers_update.
         """
 
         path_params = {"id": id_}
@@ -121,7 +121,7 @@ class GponResource:
     def patch_customers(self, id_: str, data: CustomerDetail) -> CustomerDetail:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_customers_partial_update.
+        operationId: gpon_customers_partial_update.
         """
 
         path_params = {"id": id_}
@@ -138,7 +138,7 @@ class GponResource:
     def delete_customers(self, id_: str) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_customers_delete.
+        operationId: gpon_customers_delete.
         """
 
         path_params = {"id": id_}
@@ -155,7 +155,7 @@ class GponResource:
     def list_devices_names(self) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_devices-names_list.
+        operationId: gpon_devices-names_list.
         """
 
         path_params = None
@@ -167,7 +167,7 @@ class GponResource:
     def list_permissions(self) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_permissions_list.
+        operationId: gpon_permissions_list.
         """
 
         path_params = None
@@ -179,7 +179,7 @@ class GponResource:
     def get_ports_names(self, device_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_ports-names_read.
+        operationId: gpon_ports-names_read.
         """
 
         path_params = {"device_name": device_name}
@@ -196,7 +196,7 @@ class GponResource:
     def list_statistic_subscribers_count(self, device_name: str) -> _list[OLTSubscriber]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_statistic_subscribers-count_list.
+        operationId: gpon_statistic_subscribers-count_list.
         """
 
         path_params = {"device_name": device_name}
@@ -213,7 +213,7 @@ class GponResource:
     def get_subscriber_connection(self, id_: int) -> UpdateSubscriberData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscriber-connection_read.
+        operationId: gpon_subscriber-connection_read.
         """
 
         path_params = {"id": id_}
@@ -230,7 +230,7 @@ class GponResource:
     def update_subscriber_connection(self, id_: int, data: UpdateSubscriberData) -> UpdateSubscriberData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscriber-connection_update.
+        operationId: gpon_subscriber-connection_update.
         """
 
         path_params = {"id": id_}
@@ -247,7 +247,7 @@ class GponResource:
     def patch_subscriber_connection(self, id_: int, data: UpdateSubscriberData) -> UpdateSubscriberData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscriber-connection_partial_update.
+        operationId: gpon_subscriber-connection_partial_update.
         """
 
         path_params = {"id": id_}
@@ -264,7 +264,7 @@ class GponResource:
     def delete_subscriber_connection(self, id_: int) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscriber-connection_delete.
+        operationId: gpon_subscriber-connection_delete.
         """
 
         path_params = {"id": id_}
@@ -281,7 +281,7 @@ class GponResource:
     def list_subscriber_data(self) -> _list[SubscriberData]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscriber-data_list.
+        operationId: gpon_subscriber-data_list.
         """
 
         path_params = None
@@ -298,7 +298,7 @@ class GponResource:
     def create_subscriber_data(self, data: SubscriberData) -> SubscriberData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscriber-data_create.
+        operationId: gpon_subscriber-data_create.
         """
 
         path_params = None
@@ -315,7 +315,7 @@ class GponResource:
     def get_subscribers_on_device(self, device_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_subscribers-on-device_read.
+        operationId: gpon_subscribers-on-device_read.
         """
 
         path_params = {"device_name": device_name}
@@ -332,7 +332,7 @@ class GponResource:
     def list_tech_data(self) -> _list[CreateTechData]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_list.
+        operationId: gpon_tech-data_list.
         """
 
         path_params = None
@@ -349,7 +349,7 @@ class GponResource:
     def create_tech_data(self, data: CreateTechData) -> CreateTechData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_create.
+        operationId: gpon_tech-data_create.
         """
 
         path_params = None
@@ -366,7 +366,7 @@ class GponResource:
     def get_tech_data_building(self, id_: str) -> ViewHouseBTechData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_building_read.
+        operationId: gpon_tech-data_building_read.
         """
 
         path_params = {"id": id_}
@@ -391,7 +391,7 @@ class GponResource:
     ) -> Page[End3TechCapability]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_end3_list.
+        operationId: gpon_tech-data_end3_list.
         """
 
         path_params = None
@@ -414,7 +414,7 @@ class GponResource:
     def create_tech_data_end3(self, data: AddEnd3ToHouseOLTState) -> AddEnd3ToHouseOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_end3_create.
+        operationId: gpon_tech-data_end3_create.
         """
 
         path_params = None
@@ -431,7 +431,7 @@ class GponResource:
     def get_tech_data_end3(self, id_: str) -> End3TechCapability:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_end3_read.
+        operationId: gpon_tech-data_end3_read.
         """
 
         path_params = {"id": id_}
@@ -448,7 +448,7 @@ class GponResource:
     def update_tech_data_end3(self, id_: str, data: End3TechCapability) -> End3TechCapability:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_end3_update.
+        operationId: gpon_tech-data_end3_update.
         """
 
         path_params = {"id": id_}
@@ -465,7 +465,7 @@ class GponResource:
     def patch_tech_data_end3(self, id_: str, data: End3TechCapability) -> End3TechCapability:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_end3_partial_update.
+        operationId: gpon_tech-data_end3_partial_update.
         """
 
         path_params = {"id": id_}
@@ -482,7 +482,7 @@ class GponResource:
     def delete_tech_data_end3(self, id_: str) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_end3_delete.
+        operationId: gpon_tech-data_end3_delete.
         """
 
         path_params = {"id": id_}
@@ -499,7 +499,7 @@ class GponResource:
     def get_tech_data_house_olt_state(self, id_: str) -> StructuresHouseOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_house-olt-state_read.
+        operationId: gpon_tech-data_house-olt-state_read.
         """
 
         path_params = {"id": id_}
@@ -516,7 +516,7 @@ class GponResource:
     def update_tech_data_house_olt_state(self, id_: str, data: UpdateHouseOLTState) -> UpdateHouseOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_house-olt-state_update.
+        operationId: gpon_tech-data_house-olt-state_update.
         """
 
         path_params = {"id": id_}
@@ -533,7 +533,7 @@ class GponResource:
     def patch_tech_data_house_olt_state(self, id_: str, data: UpdateHouseOLTState) -> UpdateHouseOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_house-olt-state_partial_update.
+        operationId: gpon_tech-data_house-olt-state_partial_update.
         """
 
         path_params = {"id": id_}
@@ -550,7 +550,7 @@ class GponResource:
     def get_tech_data_olt_state(self, id_: str) -> UpdateRetrieveOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_olt-state_read.
+        operationId: gpon_tech-data_olt-state_read.
         """
 
         path_params = {"id": id_}
@@ -567,7 +567,7 @@ class GponResource:
     def update_tech_data_olt_state(self, id_: str, data: UpdateRetrieveOLTState) -> UpdateRetrieveOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_olt-state_update.
+        operationId: gpon_tech-data_olt-state_update.
         """
 
         path_params = {"id": id_}
@@ -584,7 +584,7 @@ class GponResource:
     def patch_tech_data_olt_state(self, id_: str, data: UpdateRetrieveOLTState) -> UpdateRetrieveOLTState:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_olt-state_partial_update.
+        operationId: gpon_tech-data_olt-state_partial_update.
         """
 
         path_params = {"id": id_}
@@ -601,7 +601,7 @@ class GponResource:
     def get_tech_data_tech_capability(self, id_: str) -> TechCapability:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_tech-capability_read.
+        operationId: gpon_tech-data_tech-capability_read.
         """
 
         path_params = {"id": id_}
@@ -618,7 +618,7 @@ class GponResource:
     def update_tech_data_tech_capability(self, id_: str, data: TechCapability) -> TechCapability:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_tech-capability_update.
+        operationId: gpon_tech-data_tech-capability_update.
         """
 
         path_params = {"id": id_}
@@ -635,7 +635,7 @@ class GponResource:
     def patch_tech_data_tech_capability(self, id_: str, data: TechCapability) -> TechCapability:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_tech-capability_partial_update.
+        operationId: gpon_tech-data_tech-capability_partial_update.
         """
 
         path_params = {"id": id_}
@@ -652,7 +652,7 @@ class GponResource:
     def get_tech_data(self, device_name: str) -> ViewOLTStatesTechData:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gpon_tech-data_read.
+        operationId: gpon_tech-data_read.
         """
 
         path_params = {"device_name": device_name}

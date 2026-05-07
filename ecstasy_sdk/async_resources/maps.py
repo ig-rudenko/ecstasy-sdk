@@ -24,7 +24,7 @@ class AsyncMapsResource:
     async def list(self, *, page: int | None = None) -> Page[Map]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_list.
+        operationId: maps_list.
         """
 
         path_params = None
@@ -36,7 +36,7 @@ class AsyncMapsResource:
     async def list_layers(self, *, id_: str | None = None, name: str | None = None) -> _list[Layer]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_layers_list.
+        operationId: maps_layers_list.
         """
 
         path_params = None
@@ -53,7 +53,7 @@ class AsyncMapsResource:
     async def update_layers(self, id_: int, data: Layer) -> Layer:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_layers_update.
+        operationId: maps_layers_update.
         """
 
         path_params = {"id": id_}
@@ -65,7 +65,7 @@ class AsyncMapsResource:
     async def patch_layers(self, id_: int, data: Layer) -> Layer:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_layers_partial_update.
+        operationId: maps_layers_partial_update.
         """
 
         path_params = {"id": id_}
@@ -82,7 +82,7 @@ class AsyncMapsResource:
     async def get(self, id_: int) -> MapDetail:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_read.
+        operationId: maps_read.
         """
 
         path_params = {"id": id_}
@@ -94,7 +94,7 @@ class AsyncMapsResource:
     async def get_layers(self, map_id: str) -> MapLayer:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_layers_read.
+        operationId: maps_layers_read.
         """
 
         path_params = {"map_id": map_id}
@@ -111,7 +111,7 @@ class AsyncMapsResource:
     async def get_render(self, map_id: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_render_read.
+        operationId: maps_render_read.
         """
 
         path_params = {"map_id": map_id}
@@ -128,7 +128,7 @@ class AsyncMapsResource:
     async def get_update(self, map_id: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: maps_update_read.
+        operationId: maps_update_read.
         """
 
         path_params = {"map_id": map_id}

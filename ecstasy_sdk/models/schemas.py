@@ -26,7 +26,7 @@ class User(EcstasyModel):
 class UserPermissions(EcstasyModel):
     """Схема `UserPermissions` из Ecstasy API."""
 
-    permissions: str | None = None
+    permissions: list[str]
     console: str | None = None
     ecstasy_loop_url: str | None = None
 
@@ -91,8 +91,8 @@ class BulkDeviceCommandExecutionResult(EcstasyModel):
     updated_at: str | None = None
 
 
-class BulkCommandTaskResultSwagger(EcstasyModel):
-    """Схема `BulkCommandTaskResultSwagger` из Ecstasy API."""
+class BulkCommandTaskResult(EcstasyModel):
+    """Схема `BulkCommandTaskResult` из Ecstasy API."""
 
     device_id: int = Field(..., alias="deviceId")
     device_name: str = Field(..., alias="deviceName")
@@ -105,8 +105,8 @@ class BulkCommandTaskResultSwagger(EcstasyModel):
     duration: float
 
 
-class BulkCommandTaskStatusSwagger(EcstasyModel):
-    """Схема `BulkCommandTaskStatusSwagger` из Ecstasy API."""
+class BulkCommandTaskStatus(EcstasyModel):
+    """Схема `BulkCommandTaskStatus` из Ecstasy API."""
 
     task_id: str = Field(..., alias="taskId")
     status: str
@@ -115,11 +115,11 @@ class BulkCommandTaskStatusSwagger(EcstasyModel):
     total: int | None = None
     results_count: int = Field(..., alias="resultsCount")
     result_device_ids: list[int] = Field(..., alias="resultDeviceIds")
-    results: list[BulkCommandTaskResultSwagger]
+    results: list[BulkCommandTaskResult]
 
 
-class ExecuteBulkDeviceCommandRequestSwagger(EcstasyModel):
-    """Схема `ExecuteBulkDeviceCommandRequestSwagger` из Ecstasy API."""
+class ExecuteBulkDeviceCommandRequest(EcstasyModel):
+    """Схема `ExecuteBulkDeviceCommandRequest` из Ecstasy API."""
 
     device_ids: list[int]
     port: dict[str, str] | None = None
@@ -129,20 +129,20 @@ class ExecuteBulkDeviceCommandRequestSwagger(EcstasyModel):
     word: dict[str, str] | None = None
 
 
-class BulkCommandLaunchDeviceSwagger(EcstasyModel):
-    """Схема `BulkCommandLaunchDeviceSwagger` из Ecstasy API."""
+class BulkCommandLaunchDevice(EcstasyModel):
+    """Схема `BulkCommandLaunchDevice` из Ecstasy API."""
 
     device_id: int = Field(..., alias="deviceId")
     device_name: str = Field(..., alias="deviceName")
     detail: str | None = None
 
 
-class BulkCommandLaunchResponseSwagger(EcstasyModel):
-    """Схема `BulkCommandLaunchResponseSwagger` из Ecstasy API."""
+class BulkCommandLaunchResponse(EcstasyModel):
+    """Схема `BulkCommandLaunchResponse` из Ecstasy API."""
 
     task_id: str = Field(..., alias="taskId")
-    devices: list[BulkCommandLaunchDeviceSwagger]
-    skipped: list[BulkCommandLaunchDeviceSwagger]
+    devices: list[BulkCommandLaunchDevice]
+    skipped: list[BulkCommandLaunchDevice]
 
 
 class InterfacesComments(EcstasyModel):
@@ -163,29 +163,29 @@ class BrassSession(EcstasyModel):
     port: str | None = None
 
 
-class CutBrasSessionSwagger(EcstasyModel):
-    """Схема `CutBrasSessionSwagger` из Ecstasy API."""
+class CutBrasSession(EcstasyModel):
+    """Схема `CutBrasSession` из Ecstasy API."""
 
     errors: list[str]
     port_reload_status: str = Field(..., alias="portReloadStatus")
 
 
-class BrasSessionSwagger(EcstasyModel):
-    """Схема `BrasSessionSwagger` из Ecstasy API."""
+class BrasSession(EcstasyModel):
+    """Схема `BrasSession` из Ecstasy API."""
 
     session: str | None
     errors: list[str]
 
 
-class BrasPairSessionResultSwagger(EcstasyModel):
-    """Схема `BrasPairSessionResultSwagger` из Ecstasy API."""
+class BrasPairSessionResult(EcstasyModel):
+    """Схема `BrasPairSessionResult` из Ecstasy API."""
 
-    b_r_a_s1: BrasSessionSwagger = Field(..., alias="BRAS1")
-    b_r_a_s2: BrasSessionSwagger = Field(..., alias="BRAS2")
+    b_r_a_s1: BrasSession = Field(..., alias="BRAS1")
+    b_r_a_s2: BrasSession = Field(..., alias="BRAS2")
 
 
-class InterfaceWorkloadSwagger(EcstasyModel):
-    """Схема `InterfaceWorkloadSwagger` из Ecstasy API."""
+class InterfaceWorkload(EcstasyModel):
+    """Схема `InterfaceWorkload` из Ecstasy API."""
 
     count: int
     abons: int
@@ -197,10 +197,10 @@ class InterfaceWorkloadSwagger(EcstasyModel):
     abons_down_no_desc: int
 
 
-class DevicesInterfaceWorkloadSwagger(EcstasyModel):
-    """Схема `DevicesInterfaceWorkloadSwagger` из Ecstasy API."""
+class DevicesInterfaceWorkload(EcstasyModel):
+    """Схема `DevicesInterfaceWorkload` из Ecstasy API."""
 
-    interfaces_count: list[InterfaceWorkloadSwagger]
+    interfaces_count: list[InterfaceWorkload]
     ip: str
     name: str
     vendor: str | None
@@ -208,11 +208,11 @@ class DevicesInterfaceWorkloadSwagger(EcstasyModel):
     model: str | None
 
 
-class DevicesInterfaceWorkloadResultSwagger(EcstasyModel):
-    """Схема `DevicesInterfaceWorkloadResultSwagger` из Ecstasy API."""
+class DevicesInterfaceWorkloadResult(EcstasyModel):
+    """Схема `DevicesInterfaceWorkloadResult` из Ecstasy API."""
 
     devices_count: int
-    devices: list[DevicesInterfaceWorkloadSwagger]
+    devices: list[DevicesInterfaceWorkload]
 
 
 class DeviceAuthGroup(EcstasyModel):
@@ -287,15 +287,15 @@ class UserDeviceAction(EcstasyModel):
     action: str
 
 
-class ChangeDescriptionRequestSwagger(EcstasyModel):
-    """Схема `ChangeDescriptionRequestSwagger` из Ecstasy API."""
+class ChangeDescriptionRequest(EcstasyModel):
+    """Схема `ChangeDescriptionRequest` из Ecstasy API."""
 
     port: str
     description: str
 
 
-class ChangeDescriptionSwagger(EcstasyModel):
-    """Схема `ChangeDescriptionSwagger` из Ecstasy API."""
+class ChangeDescription(EcstasyModel):
+    """Схема `ChangeDescription` из Ecstasy API."""
 
     description: str
     port: str
@@ -319,26 +319,111 @@ class DeviceCommands(EcstasyModel):
     device_vendor: str
 
 
-class ConfigFileSwagger(EcstasyModel):
-    """Схема `ConfigFileSwagger` из Ecstasy API."""
+class ConfigFile(EcstasyModel):
+    """Схема `ConfigFile` из Ecstasy API."""
 
     name: str
     size: int
     mod_time: str = Field(..., alias="modTime")
 
 
-class DeviceInfoSwagger(EcstasyModel):
-    """Схема `DeviceInfoSwagger` из Ecstasy API."""
+class DeviceZabbixInventory(EcstasyModel):
+    type: str = ""
+    type_full: str = ""
+    name: str = ""
+    alias: str = ""
+    os: str = ""
+    os_full: str = ""
+    os_short: str = ""
+    serialno_a: str = ""
+    serialno_b: str = ""
+    tag: str = ""
+    asset_tag: str = ""
+    macaddress_a: str = ""
+    macaddress_b: str = ""
+    hardware: str = ""
+    hardware_full: str = ""
+    software: str = ""
+    software_full: str = ""
+    software_app_a: str = ""
+    software_app_b: str = ""
+    software_app_c: str = ""
+    software_app_d: str = ""
+    software_app_e: str = ""
+    contact: str = ""
+    location: str = ""
+    location_lat: str = ""
+    location_lon: str = ""
+    notes: str = ""
+    chassis: str = ""
+    model: str = ""
+    hw_arch: str = ""
+    vendor: str = ""
+    contract_number: str = ""
+    installer_name: str = ""
+    deployment_status: str = ""
+    url_a: str = ""
+    url_b: str = ""
+    url_c: str = ""
+    host_networks: str = ""
+    host_netmask: str = ""
+    host_router: str = ""
+    oob_ip: str = ""
+    oob_netmask: str = ""
+    oob_router: str = ""
+    date_hw_purchase: str = ""
+    date_hw_install: str = ""
+    date_hw_expiry: str = ""
+    date_hw_decomm: str = ""
+    site_address_a: str = ""
+    site_address_b: str = ""
+    site_address_c: str = ""
+    site_city: str = ""
+    site_state: str = ""
+    site_country: str = ""
+    site_zip: str = ""
+    site_rack: str = ""
+    site_notes: str = ""
+    poc_1_name: str = ""
+    poc_1_email: str = ""
+    poc_1_phone_a: str = ""
+    poc_1_phone_b: str = ""
+    poc_1_cell: str = ""
+    poc_1_screen: str = ""
+    poc_1_notes: str = ""
+    poc_2_name: str = ""
+    poc_2_email: str = ""
+    poc_2_phone_a: str = ""
+    poc_2_phone_b: str = ""
+    poc_2_cell: str = ""
+    poc_2_screen: str = ""
+    poc_2_notes: str = ""
+
+
+class DeviceZabbixMap(EcstasyModel):
+    sysmapid: int
+    name: str
+
+
+class DeviceZabbixInfo(EcstasyModel):
+    description: str
+    monitoring_available: bool = Field(..., alias="monitoringAvailable")
+    inventory: DeviceZabbixInventory
+    maps: list[DeviceZabbixMap]
+
+
+class DeviceInfo(EcstasyModel):
+    """Схема `DeviceInfo` из Ecstasy API."""
 
     device_name: str = Field(..., alias="deviceName")
-    device_i_p: str = Field(..., alias="deviceIP")
+    device_ip: str = Field(..., alias="deviceIP")
     elastic_stack_link: str = Field(..., alias="elasticStackLink")
-    zabbix_host_i_d: str = Field(..., alias="zabbixHostID")
-    zabbix_info: dict[str, str | None] = Field(..., alias="zabbixInfo")
+    zabbix_host_id: int = Field(..., alias="zabbixHostID")
+    zabbix_info: DeviceZabbixInfo = Field(..., alias="zabbixInfo")
     permission: int
     coords: list[float]
     uptime: int
-    console_u_r_l: str = Field(..., alias="consoleURL")
+    console_url: str = Field(..., alias="consoleURL")
 
 
 class PortDetailInfo(EcstasyModel):
@@ -348,8 +433,8 @@ class PortDetailInfo(EcstasyModel):
     data: str | None = None
 
 
-class InterfaceDetailInfoSwagger(EcstasyModel):
-    """Схема `InterfaceDetailInfoSwagger` из Ecstasy API."""
+class InterfaceDetailInfo(EcstasyModel):
+    """Схема `InterfaceDetailInfo` из Ecstasy API."""
 
     port_detail_info: PortDetailInfo = Field(..., alias="portDetailInfo")
     port_config: str = Field(..., alias="portConfig")
@@ -358,8 +443,8 @@ class InterfaceDetailInfoSwagger(EcstasyModel):
     has_cable_diag: bool = Field(..., alias="hasCableDiag")
 
 
-class LinkToAnotherDeviceSwagger(EcstasyModel):
-    """Схема `LinkToAnotherDeviceSwagger` из Ecstasy API."""
+class LinkToAnotherDevice(EcstasyModel):
+    """Схема `LinkToAnotherDevice` из Ecstasy API."""
 
     device_name: str = Field(..., alias="deviceName")
     url: str
@@ -373,37 +458,37 @@ class InterfaceComment(EcstasyModel):
     text: str
 
 
-class InterfaceInfoSwagger(EcstasyModel):
-    """Схема `InterfaceInfoSwagger` из Ecstasy API."""
+class InterfaceInfo(EcstasyModel):
+    """Схема `InterfaceInfo` из Ecstasy API."""
 
     name: str
     status: str
     description: str
     vlans: list[int]
-    link: LinkToAnotherDeviceSwagger | None = None
+    link: LinkToAnotherDevice | None = None
     comments: list[InterfaceComment] | None = None
 
 
-class InterfacesListSwagger(EcstasyModel):
-    """Схема `InterfacesListSwagger` из Ecstasy API."""
+class InterfacesList(EcstasyModel):
+    """Схема `InterfacesList` из Ecstasy API."""
 
-    interfaces: list[InterfaceInfoSwagger]
+    interfaces: list[InterfaceInfo]
     device_available: bool = Field(..., alias="deviceAvailable")
     collected: str
 
 
-class MacListSwagger(EcstasyModel):
-    """Схема `MacListSwagger` из Ecstasy API."""
+class MacList(EcstasyModel):
+    """Схема `MacList` из Ecstasy API."""
 
     vlan_i_d: int = Field(..., alias="vlanID")
     mac: str
     vlan_name: str = Field(..., alias="vlanName")
 
 
-class MacListResultSwagger(EcstasyModel):
-    """Схема `MacListResultSwagger` из Ecstasy API."""
+class MacListResult(EcstasyModel):
+    """Схема `MacListResult` из Ecstasy API."""
 
-    result: list[MacListSwagger]
+    result: list[MacList]
     count: int
 
 
@@ -420,8 +505,8 @@ class DeviceMedia(EcstasyModel):
     url: str | None = None
 
 
-class DevicePoolStatusesSwagger(EcstasyModel):
-    """Схема `DevicePoolStatusesSwagger` из Ecstasy API."""
+class DevicePoolStatuses(EcstasyModel):
+    """Схема `DevicePoolStatuses` из Ecstasy API."""
 
     connection_pool_size: int = Field(..., alias="connectionPoolSize")
     statuses: list[bool]
@@ -479,8 +564,8 @@ class MacGatherStatus(EcstasyModel):
     progress: str | None = None
 
 
-class NodesSwagger(EcstasyModel):
-    """Схема `NodesSwagger` из Ecstasy API."""
+class Nodes(EcstasyModel):
+    """Схема `Nodes` из Ecstasy API."""
 
     id_: str = Field(..., alias="id")
     label: str
@@ -488,8 +573,8 @@ class NodesSwagger(EcstasyModel):
     color: str
 
 
-class EdgesSwagger(EcstasyModel):
-    """Схема `EdgesSwagger` из Ecstasy API."""
+class Edges(EcstasyModel):
+    """Схема `Edges` из Ecstasy API."""
 
     to: str
     title: str
@@ -498,11 +583,11 @@ class EdgesSwagger(EcstasyModel):
     from_: str = Field(..., alias="from")
 
 
-class MacTracerouteSwagger(EcstasyModel):
-    """Схема `MacTracerouteSwagger` из Ecstasy API."""
+class MacTraceroute(EcstasyModel):
+    """Схема `MacTraceroute` из Ecstasy API."""
 
-    nodes: list[NodesSwagger]
-    edges: list[EdgesSwagger]
+    nodes: list[Nodes]
+    edges: list[Edges]
 
 
 class BuildingAddress(EcstasyModel):
@@ -903,15 +988,14 @@ class FoundInterface(EcstasyModel):
     description: str
     vlans: str
     saved_time: str = Field(..., alias="savedTime")
-    vlans_saved_time: str = Field(..., alias="vlansSavedTime")
 
 
 class FoundDeviceInterfaces(EcstasyModel):
     """Схема `FoundDeviceInterfaces` из Ecstasy API."""
 
-    device: str
+    devices: str
     comments: list[Comment]
-    interface: FoundInterface
+    interfaces: FoundInterface
 
 
 class SearchInterfaceByDescResult(EcstasyModel):
@@ -976,40 +1060,40 @@ for _model in [
     Devices,
     BulkDeviceCommandExecution,
     BulkDeviceCommandExecutionResult,
-    BulkCommandTaskResultSwagger,
-    BulkCommandTaskStatusSwagger,
-    ExecuteBulkDeviceCommandRequestSwagger,
-    BulkCommandLaunchDeviceSwagger,
-    BulkCommandLaunchResponseSwagger,
+    BulkCommandTaskResult,
+    BulkCommandTaskStatus,
+    ExecuteBulkDeviceCommandRequest,
+    BulkCommandLaunchDevice,
+    BulkCommandLaunchResponse,
     InterfacesComments,
     BrassSession,
-    CutBrasSessionSwagger,
-    BrasSessionSwagger,
-    BrasPairSessionResultSwagger,
-    InterfaceWorkloadSwagger,
-    DevicesInterfaceWorkloadSwagger,
-    DevicesInterfaceWorkloadResultSwagger,
+    CutBrasSession,
+    BrasSession,
+    BrasPairSessionResult,
+    InterfaceWorkload,
+    DevicesInterfaceWorkload,
+    DevicesInterfaceWorkloadResult,
     DeviceAuthGroup,
     DeviceGroup,
     DevicesDetail,
     DevicesDetailUpdate,
     UserDeviceAction,
-    ChangeDescriptionRequestSwagger,
-    ChangeDescriptionSwagger,
+    ChangeDescriptionRequest,
+    ChangeDescription,
     ADSLProfile,
     DeviceCommands,
-    ConfigFileSwagger,
-    DeviceInfoSwagger,
+    ConfigFile,
+    DeviceInfo,
     PortDetailInfo,
-    InterfaceDetailInfoSwagger,
-    LinkToAnotherDeviceSwagger,
+    InterfaceDetailInfo,
+    LinkToAnotherDevice,
     InterfaceComment,
-    InterfaceInfoSwagger,
-    InterfacesListSwagger,
-    MacListSwagger,
-    MacListResultSwagger,
+    InterfaceInfo,
+    InterfacesList,
+    MacList,
+    MacListResult,
     DeviceMedia,
-    DevicePoolStatusesSwagger,
+    DevicePoolStatuses,
     PortControl,
     PoEPortStatus,
     DeviceViewings,
@@ -1017,9 +1101,9 @@ for _model in [
     DeviceVlan,
     MacGatherScanTask,
     MacGatherStatus,
-    NodesSwagger,
-    EdgesSwagger,
-    MacTracerouteSwagger,
+    Nodes,
+    Edges,
+    MacTraceroute,
     BuildingAddress,
     Address,
     End3,
@@ -1074,40 +1158,40 @@ __all__ = [
     "Devices",
     "BulkDeviceCommandExecution",
     "BulkDeviceCommandExecutionResult",
-    "BulkCommandTaskResultSwagger",
-    "BulkCommandTaskStatusSwagger",
-    "ExecuteBulkDeviceCommandRequestSwagger",
-    "BulkCommandLaunchDeviceSwagger",
-    "BulkCommandLaunchResponseSwagger",
+    "BulkCommandTaskResult",
+    "BulkCommandTaskStatus",
+    "ExecuteBulkDeviceCommandRequest",
+    "BulkCommandLaunchDevice",
+    "BulkCommandLaunchResponse",
     "InterfacesComments",
     "BrassSession",
-    "CutBrasSessionSwagger",
-    "BrasSessionSwagger",
-    "BrasPairSessionResultSwagger",
-    "InterfaceWorkloadSwagger",
-    "DevicesInterfaceWorkloadSwagger",
-    "DevicesInterfaceWorkloadResultSwagger",
+    "CutBrasSession",
+    "BrasSession",
+    "BrasPairSessionResult",
+    "InterfaceWorkload",
+    "DevicesInterfaceWorkload",
+    "DevicesInterfaceWorkloadResult",
     "DeviceAuthGroup",
     "DeviceGroup",
     "DevicesDetail",
     "DevicesDetailUpdate",
     "UserDeviceAction",
-    "ChangeDescriptionRequestSwagger",
-    "ChangeDescriptionSwagger",
+    "ChangeDescriptionRequest",
+    "ChangeDescription",
     "ADSLProfile",
     "DeviceCommands",
-    "ConfigFileSwagger",
-    "DeviceInfoSwagger",
+    "ConfigFile",
+    "DeviceInfo",
     "PortDetailInfo",
-    "InterfaceDetailInfoSwagger",
-    "LinkToAnotherDeviceSwagger",
+    "InterfaceDetailInfo",
+    "LinkToAnotherDevice",
     "InterfaceComment",
-    "InterfaceInfoSwagger",
-    "InterfacesListSwagger",
-    "MacListSwagger",
-    "MacListResultSwagger",
+    "InterfaceInfo",
+    "InterfacesList",
+    "MacList",
+    "MacListResult",
     "DeviceMedia",
-    "DevicePoolStatusesSwagger",
+    "DevicePoolStatuses",
     "PortControl",
     "PoEPortStatus",
     "DeviceViewings",
@@ -1115,9 +1199,9 @@ __all__ = [
     "DeviceVlan",
     "MacGatherScanTask",
     "MacGatherStatus",
-    "NodesSwagger",
-    "EdgesSwagger",
-    "MacTracerouteSwagger",
+    "Nodes",
+    "Edges",
+    "MacTraceroute",
     "BuildingAddress",
     "Address",
     "End3",

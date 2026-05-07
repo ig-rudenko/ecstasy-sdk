@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from builtins import list as _list
-
 from ecstasy_sdk.models import (
     MacGatherScanTask,
     MacGatherStatus,
-    MacTracerouteSwagger,
+    MacTraceroute,
 )
 from ecstasy_sdk.transport.async_ import AsyncTransport
 
@@ -21,7 +19,7 @@ class AsyncGatherResource:
     async def create_mac_address_scan_run(self, data: MacGatherScanTask) -> MacGatherScanTask:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gather_mac-address_scan_run_create.
+        operationId: gather_mac-address_scan_run_create.
         """
 
         path_params = None
@@ -35,10 +33,10 @@ class AsyncGatherResource:
             response_model=MacGatherScanTask,
         )
 
-    async def list_mac_address_scan_status(self) -> _list[MacGatherStatus]:
+    async def get_mac_address_scan_status(self) -> MacGatherStatus:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gather_mac-address_scan_status_list.
+        operationId: gather_mac-address_scan_status_list.
         """
 
         path_params = None
@@ -49,13 +47,13 @@ class AsyncGatherResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[MacGatherStatus],
+            response_model=MacGatherStatus,
         )
 
-    async def get_traceroute_mac_address(self, mac: str) -> MacTracerouteSwagger:
+    async def get_traceroute_mac_address(self, mac: str) -> MacTraceroute:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: gather_traceroute_mac-address_read.
+        operationId: gather_traceroute_mac-address_read.
         """
 
         path_params = {"mac": mac}
@@ -66,5 +64,5 @@ class AsyncGatherResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=MacTracerouteSwagger,
+            response_model=MacTraceroute,
         )

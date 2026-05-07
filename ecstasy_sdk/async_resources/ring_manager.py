@@ -21,7 +21,7 @@ class AsyncRingManagerResource:
     async def get_access_ring(self, head_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_access-ring_read.
+        operationId: ring-manager_access-ring_read.
         """
 
         path_params = {"head_name": head_name}
@@ -38,7 +38,7 @@ class AsyncRingManagerResource:
     async def list_access_rings(self) -> _list[AccessRing]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_access-rings_list.
+        operationId: ring-manager_access-rings_list.
         """
 
         path_params = None
@@ -55,7 +55,7 @@ class AsyncRingManagerResource:
     async def get_transport_ring(self, ring_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_transport-ring_read.
+        operationId: ring-manager_transport-ring_read.
         """
 
         path_params = {"ring_name": ring_name}
@@ -72,7 +72,7 @@ class AsyncRingManagerResource:
     async def list_transport_ring_solutions(self, ring_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_transport-ring_solutions_list.
+        operationId: ring-manager_transport-ring_solutions_list.
         """
 
         path_params = {"ring_name": ring_name}
@@ -89,7 +89,7 @@ class AsyncRingManagerResource:
     async def create_transport_ring_solutions(self, ring_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_transport-ring_solutions_create.
+        operationId: ring-manager_transport-ring_solutions_create.
         """
 
         path_params = {"ring_name": ring_name}
@@ -106,7 +106,7 @@ class AsyncRingManagerResource:
     async def list_transport_ring_solutions_last(self, ring_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_transport-ring_solutions_last_list.
+        operationId: ring-manager_transport-ring_solutions_last_list.
         """
 
         path_params = {"ring_name": ring_name}
@@ -123,7 +123,7 @@ class AsyncRingManagerResource:
     async def list_transport_ring_status(self, ring_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_transport-ring_status_list.
+        operationId: ring-manager_transport-ring_status_list.
         """
 
         path_params = {"ring_name": ring_name}
@@ -140,7 +140,7 @@ class AsyncRingManagerResource:
     async def list_transport_rings(self) -> _list[TransportRing]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: ring-manager_transport-rings_list.
+        operationId: ring-manager_transport-rings_list.
         """
 
         path_params = None

@@ -24,7 +24,7 @@ class AsyncToolsResource:
     ) -> SearchInterfaceByDescResult:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: tools_find-by-desc_list.
+        operationId: tools_find-by-desc_list.
         """
 
         path_params = None
@@ -41,7 +41,7 @@ class AsyncToolsResource:
     async def get_ip_mac_info(self, ip_or_mac: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: tools_ip-mac-info_read.
+        operationId: tools_ip-mac-info_read.
         """
 
         path_params = {"ip_or_mac": ip_or_mac}
@@ -58,7 +58,7 @@ class AsyncToolsResource:
     async def get_mac_vendor(self, mac: str) -> GetVendor:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: tools_mac-vendor_read.
+        operationId: tools_mac-vendor_read.
         """
 
         path_params = {"mac": mac}
@@ -75,7 +75,7 @@ class AsyncToolsResource:
     async def list_vlan_desc(self, *, vlan: int | None = None) -> GetVlanDesc:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: tools_vlan-desc_list.
+        operationId: tools_vlan-desc_list.
         """
 
         path_params = None
@@ -100,7 +100,7 @@ class AsyncToolsResource:
     ) -> VlanTraceroute:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: tools_vlan-traceroute_list.
+        operationId: tools_vlan-traceroute_list.
         """
 
         path_params = None
@@ -123,7 +123,7 @@ class AsyncToolsResource:
     async def list_vlans_scan_check(self) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: tools_vlans-scan_check_list.
+        operationId: tools_vlans-scan_check_list.
         """
 
         path_params = None

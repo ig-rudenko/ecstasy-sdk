@@ -5,32 +5,32 @@ from typing import Any
 
 from ecstasy_sdk.models import (
     ADSLProfile,
-    BrasPairSessionResultSwagger,
+    BrasPairSessionResult,
     BrassSession,
-    BulkCommandLaunchResponseSwagger,
-    BulkCommandTaskStatusSwagger,
+    BulkCommandLaunchResponse,
+    BulkCommandTaskStatus,
     BulkDeviceCommandExecution,
     BulkDeviceCommandExecutionResult,
-    ChangeDescriptionRequestSwagger,
-    ChangeDescriptionSwagger,
-    ConfigFileSwagger,
-    CutBrasSessionSwagger,
+    ChangeDescription,
+    ChangeDescriptionRequest,
+    ConfigFile,
+    CutBrasSession,
     DeviceCommands,
-    DeviceInfoSwagger,
+    DeviceInfo,
     DeviceMedia,
-    DevicePoolStatusesSwagger,
+    DevicePoolStatuses,
     Devices,
     DevicesDetail,
     DevicesDetailUpdate,
-    DevicesInterfaceWorkloadResultSwagger,
+    DevicesInterfaceWorkloadResult,
     DeviceViewings,
     DeviceVlan,
-    ExecuteBulkDeviceCommandRequestSwagger,
-    InterfaceDetailInfoSwagger,
+    ExecuteBulkDeviceCommandRequest,
+    InterfaceDetailInfo,
     InterfacesComments,
-    InterfacesListSwagger,
-    InterfaceWorkloadSwagger,
-    MacListResultSwagger,
+    InterfacesList,
+    InterfaceWorkload,
+    MacListResult,
     Page,
     PoEPortStatus,
     PortControl,
@@ -70,7 +70,7 @@ class AsyncDevicesResource:
     ) -> Page[Devices]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_list.
+        operationId: devices_list.
         """
 
         path_params = None
@@ -100,7 +100,7 @@ class AsyncDevicesResource:
     async def create(self, data: Devices) -> Devices:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_create.
+        operationId: devices_create.
         """
 
         path_params = None
@@ -131,7 +131,7 @@ class AsyncDevicesResource:
     ) -> _list[Devices]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices__all_list.
+        operationId: devices__all_list.
         """
 
         path_params = None
@@ -165,7 +165,7 @@ class AsyncDevicesResource:
     async def get_by_zabbix(self, host_id: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_by-zabbix_read.
+        operationId: devices_by-zabbix_read.
         """
 
         path_params = {"host_id": host_id}
@@ -184,7 +184,7 @@ class AsyncDevicesResource:
     ) -> Page[BulkDeviceCommandExecution]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_history_list.
+        operationId: devices_commands_history_list.
         """
 
         path_params = None
@@ -203,7 +203,7 @@ class AsyncDevicesResource:
     ) -> Page[BulkDeviceCommandExecutionResult]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_history_results_list.
+        operationId: devices_commands_history_results_list.
         """
 
         path_params = {"execution_id": execution_id}
@@ -217,10 +217,10 @@ class AsyncDevicesResource:
             response_model=Page[BulkDeviceCommandExecutionResult],
         )
 
-    async def get_commands_tasks(self, task_id: str) -> BulkCommandTaskStatusSwagger:
+    async def get_commands_tasks(self, task_id: str) -> BulkCommandTaskStatus:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_tasks_read.
+        operationId: devices_commands_tasks_read.
         """
 
         path_params = {"task_id": task_id}
@@ -231,15 +231,15 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=BulkCommandTaskStatusSwagger,
+            response_model=BulkCommandTaskStatus,
         )
 
     async def create_commands_execute_multiple(
-        self, command_id: str, data: ExecuteBulkDeviceCommandRequestSwagger
-    ) -> BulkCommandLaunchResponseSwagger:
+        self, command_id: str, data: ExecuteBulkDeviceCommandRequest
+    ) -> BulkCommandLaunchResponse:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_execute-multiple_create.
+        operationId: devices_commands_execute-multiple_create.
         """
 
         path_params = {"command_id": command_id}
@@ -250,13 +250,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=data,
-            response_model=BulkCommandLaunchResponseSwagger,
+            response_model=BulkCommandLaunchResponse,
         )
 
     async def create_comments(self, data: InterfacesComments) -> InterfacesComments:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_comments_create.
+        operationId: devices_comments_create.
         """
 
         path_params = None
@@ -273,7 +273,7 @@ class AsyncDevicesResource:
     async def get_comments(self, id_: int) -> InterfacesComments:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_comments_read.
+        operationId: devices_comments_read.
         """
 
         path_params = {"id": id_}
@@ -290,7 +290,7 @@ class AsyncDevicesResource:
     async def update_comments(self, id_: int, data: InterfacesComments) -> InterfacesComments:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_comments_update.
+        operationId: devices_comments_update.
         """
 
         path_params = {"id": id_}
@@ -307,7 +307,7 @@ class AsyncDevicesResource:
     async def patch_comments(self, id_: int, data: InterfacesComments) -> InterfacesComments:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_comments_partial_update.
+        operationId: devices_comments_partial_update.
         """
 
         path_params = {"id": id_}
@@ -324,7 +324,7 @@ class AsyncDevicesResource:
     async def delete_comments(self, id_: int) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_comments_delete.
+        operationId: devices_comments_delete.
         """
 
         path_params = {"id": id_}
@@ -338,10 +338,10 @@ class AsyncDevicesResource:
             response_model=None,
         )
 
-    async def create_cut_session(self, data: BrassSession) -> CutBrasSessionSwagger:
+    async def create_cut_session(self, data: BrassSession) -> CutBrasSession:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_cut-session_create.
+        operationId: devices_cut-session_create.
         """
 
         path_params = None
@@ -352,13 +352,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=data,
-            response_model=CutBrasSessionSwagger,
+            response_model=CutBrasSession,
         )
 
-    async def list_session(self, *, mac: str | None = None) -> BrasPairSessionResultSwagger:
+    async def list_session(self, *, mac: str | None = None) -> BrasPairSessionResult:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_session_list.
+        operationId: devices_session_list.
         """
 
         path_params = None
@@ -369,7 +369,7 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=BrasPairSessionResultSwagger,
+            response_model=BrasPairSessionResult,
         )
 
     async def list_workload_interfaces(
@@ -391,10 +391,10 @@ class AsyncDevicesResource:
         connection_pool_size: str | None = None,
         name: str | None = None,
         return_fields: str | None = None,
-    ) -> DevicesInterfaceWorkloadResultSwagger:
+    ) -> DevicesInterfaceWorkloadResult:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_workload_interfaces_list.
+        operationId: devices_workload_interfaces_list.
         """
 
         path_params = None
@@ -422,13 +422,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=DevicesInterfaceWorkloadResultSwagger,
+            response_model=DevicesInterfaceWorkloadResult,
         )
 
-    async def get_workload_interfaces(self, device_name_or_ip: str) -> InterfaceWorkloadSwagger:
+    async def get_workload_interfaces(self, device_name_or_ip: str) -> InterfaceWorkload:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_workload_interfaces_read.
+        operationId: devices_workload_interfaces_read.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -439,13 +439,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=InterfaceWorkloadSwagger,
+            response_model=InterfaceWorkload,
         )
 
     async def get(self, device_name_or_ip: str) -> DevicesDetail:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_read.
+        operationId: devices_read.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -462,7 +462,7 @@ class AsyncDevicesResource:
     async def update(self, device_name_or_ip: str, data: DevicesDetailUpdate) -> DevicesDetailUpdate:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_update.
+        operationId: devices_update.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -479,7 +479,7 @@ class AsyncDevicesResource:
     async def patch(self, device_name_or_ip: str, data: DevicesDetailUpdate) -> DevicesDetailUpdate:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_partial_update.
+        operationId: devices_partial_update.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -496,7 +496,7 @@ class AsyncDevicesResource:
     async def delete(self, device_name_or_ip: str) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_delete.
+        operationId: devices_delete.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -513,7 +513,7 @@ class AsyncDevicesResource:
     async def list_actions(self, device_name_or_ip: str) -> _list[UserDeviceAction]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_actions_list.
+        operationId: devices_actions_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -530,7 +530,7 @@ class AsyncDevicesResource:
     async def list_cable_diag(self, device_name_or_ip: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_cable-diag_list.
+        operationId: devices_cable-diag_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -545,11 +545,11 @@ class AsyncDevicesResource:
         )
 
     async def create_change_description(
-        self, device_name_or_ip: str, data: ChangeDescriptionRequestSwagger
-    ) -> ChangeDescriptionSwagger:
+        self, device_name_or_ip: str, data: ChangeDescriptionRequest
+    ) -> ChangeDescription:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_change-description_create.
+        operationId: devices_change-description_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -560,13 +560,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=data,
-            response_model=ChangeDescriptionSwagger,
+            response_model=ChangeDescription,
         )
 
     async def create_change_dsl_profile(self, device_name_or_ip: str, data: ADSLProfile) -> dict[str, Any]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_change-dsl-profile_create.
+        operationId: devices_change-dsl-profile_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -583,7 +583,7 @@ class AsyncDevicesResource:
     async def create_collect_config(self, device_name_or_ip: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_collect-config_create.
+        operationId: devices_collect-config_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -600,7 +600,7 @@ class AsyncDevicesResource:
     async def list_commands(self, device_name_or_ip: str) -> _list[DeviceCommands]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_list.
+        operationId: devices_commands_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -617,7 +617,7 @@ class AsyncDevicesResource:
     async def create_commands_execute(self, device_name_or_ip: str, command_id: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_execute_create.
+        operationId: devices_commands_execute_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "command_id": command_id}
@@ -634,7 +634,7 @@ class AsyncDevicesResource:
     async def create_commands_validate(self, device_name_or_ip: str, command_id: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_commands_validate_create.
+        operationId: devices_commands_validate_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "command_id": command_id}
@@ -651,7 +651,7 @@ class AsyncDevicesResource:
     async def get_config(self, device_name_or_ip: str, file_name: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_config_read.
+        operationId: devices_config_read.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "file_name": file_name}
@@ -668,7 +668,7 @@ class AsyncDevicesResource:
     async def delete_config(self, device_name_or_ip: str, file_name: str) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_config_delete.
+        operationId: devices_config_delete.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "file_name": file_name}
@@ -682,10 +682,10 @@ class AsyncDevicesResource:
             response_model=None,
         )
 
-    async def list_configs(self, device_name_or_ip: str) -> _list[ConfigFileSwagger]:
+    async def list_configs(self, device_name_or_ip: str) -> _list[ConfigFile]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_configs_list.
+        operationId: devices_configs_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -696,13 +696,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[ConfigFileSwagger],
+            response_model=_list[ConfigFile],
         )
 
-    async def list_info(self, device_name_or_ip: str) -> DeviceInfoSwagger:
+    async def list_info(self, device_name_or_ip: str) -> DeviceInfo:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_info_list.
+        operationId: devices_info_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -713,13 +713,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=DeviceInfoSwagger,
+            response_model=DeviceInfo,
         )
 
-    async def list_interface_info(self, device_name_or_ip: str) -> InterfaceDetailInfoSwagger:
+    async def list_interface_info(self, device_name_or_ip: str) -> InterfaceDetailInfo:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_interface-info_list.
+        operationId: devices_interface-info_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -730,7 +730,7 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=InterfaceDetailInfoSwagger,
+            response_model=InterfaceDetailInfo,
         )
 
     async def list_interfaces(
@@ -742,10 +742,10 @@ class AsyncDevicesResource:
         add_links: bool | None = None,
         add_comments: bool | None = None,
         add_zabbix_graph: bool | None = None,
-    ) -> InterfacesListSwagger:
+    ) -> InterfacesList:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_interfaces_list.
+        operationId: devices_interfaces_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -762,13 +762,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=InterfacesListSwagger,
+            response_model=InterfacesList,
         )
 
-    async def list_macs(self, device_name_or_ip: str, *, port: str | None = None) -> MacListResultSwagger:
+    async def list_macs(self, device_name_or_ip: str, *, port: str | None = None) -> MacListResult:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_macs_list.
+        operationId: devices_macs_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -779,13 +779,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=MacListResultSwagger,
+            response_model=MacListResult,
         )
 
     async def list_media(self, device_name_or_ip: str) -> _list[DeviceMedia]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_media_list.
+        operationId: devices_media_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -802,7 +802,7 @@ class AsyncDevicesResource:
     async def create_media(self, device_name_or_ip: str, data: DeviceMedia) -> DeviceMedia:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_media_create.
+        operationId: devices_media_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -819,7 +819,7 @@ class AsyncDevicesResource:
     async def get_media(self, device_name_or_ip: str, id_: int) -> DeviceMedia:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_media_read.
+        operationId: devices_media_read.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "id": id_}
@@ -836,7 +836,7 @@ class AsyncDevicesResource:
     async def update_media(self, device_name_or_ip: str, id_: int, data: DeviceMedia) -> DeviceMedia:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_media_update.
+        operationId: devices_media_update.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "id": id_}
@@ -853,7 +853,7 @@ class AsyncDevicesResource:
     async def patch_media(self, device_name_or_ip: str, id_: int, data: DeviceMedia) -> DeviceMedia:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_media_partial_update.
+        operationId: devices_media_partial_update.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "id": id_}
@@ -870,7 +870,7 @@ class AsyncDevicesResource:
     async def delete_media(self, device_name_or_ip: str, id_: int) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_media_delete.
+        operationId: devices_media_delete.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip, "id": id_}
@@ -884,10 +884,10 @@ class AsyncDevicesResource:
             response_model=None,
         )
 
-    async def list_pool(self, device_name_or_ip: str) -> DevicePoolStatusesSwagger:
+    async def list_pool(self, device_name_or_ip: str) -> DevicePoolStatuses:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_pool_list.
+        operationId: devices_pool_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -898,13 +898,13 @@ class AsyncDevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=DevicePoolStatusesSwagger,
+            response_model=DevicePoolStatuses,
         )
 
     async def delete_pool(self, device_name_or_ip: str) -> None:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_pool_delete.
+        operationId: devices_pool_delete.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -921,7 +921,7 @@ class AsyncDevicesResource:
     async def create_port_status(self, device_name_or_ip: str, data: PortControl) -> PortControl:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_port-status_create.
+        operationId: devices_port-status_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -938,7 +938,7 @@ class AsyncDevicesResource:
     async def create_set_poe_out(self, device_name_or_ip: str, data: PoEPortStatus) -> PoEPortStatus:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_set-poe-out_create.
+        operationId: devices_set-poe-out_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -955,7 +955,7 @@ class AsyncDevicesResource:
     async def list_stats(self, device_name_or_ip: str) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_stats_list.
+        operationId: devices_stats_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -972,7 +972,7 @@ class AsyncDevicesResource:
     async def list_viewings(self, device_name_or_ip: str) -> _list[DeviceViewings]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_viewings_list.
+        operationId: devices_viewings_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -989,7 +989,7 @@ class AsyncDevicesResource:
     async def create_viewings(self, device_name_or_ip: str, data: DeviceViewings) -> Any:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_viewings_create.
+        operationId: devices_viewings_create.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
@@ -1006,7 +1006,7 @@ class AsyncDevicesResource:
     async def list_vlan_info(self, device_name_or_ip: str) -> _list[DeviceVlan]:
         """Выполняет операцию Ecstasy API.
 
-        Swagger operationId: devices_vlan-info_list.
+        operationId: devices_vlan-info_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}

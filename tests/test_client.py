@@ -16,7 +16,7 @@ def test_client_sends_authorization_and_validates_response() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         seen["url"] = str(request.url)
         seen["authorization"] = request.headers.get("authorization")
-        return httpx.Response(200, json=[{"id": 1, "username": "admin"}])
+        return httpx.Response(200, json={"id": 1, "username": "admin"})
 
     client = EcstasyClient(
         "https://example.com/",
@@ -28,8 +28,8 @@ def test_client_sends_authorization_and_validates_response() -> None:
 
     assert seen["url"] == "https://example.com/api/v1/accounts/myself"
     assert seen["authorization"] == "Token test"
-    assert isinstance(users[0], User)
-    assert users[0].username == "admin"
+    assert isinstance(users, User)
+    assert users.username == "admin"
 
     client.close()
 
@@ -88,7 +88,7 @@ def test_client_does_not_duplicate_token_prefix() -> None:
 
     def handler(request: httpx.Request) -> httpx.Response:
         seen["authorization"] = request.headers.get("authorization")
-        return httpx.Response(200, json=[{"id": 1, "username": "admin"}])
+        return httpx.Response(200, json={"id": 1, "username": "admin"})
 
     client = EcstasyClient(
         "https://example.com",
