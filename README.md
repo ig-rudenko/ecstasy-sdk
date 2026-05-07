@@ -1,6 +1,6 @@
 # ecstasy-sdk
 
-Python SDK для работы с Ecstasy API v1.
+Python SDK для работы с [Ecstasy](https://github.com/ig-rudenko/ecstasy) API v1.
 
 Библиотека предоставляет синхронный и асинхронный клиенты, Pydantic-схемы запросов и ответов, типизированные resource-клиенты по группам API и единый транспорт на базе `httpx`.
 
