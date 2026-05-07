@@ -1,6 +1,12 @@
 # ecstasy-sdk
 
-Python SDK для работы с [Ecstasy](https://github.com/ig-rudenko/ecstasy) API v1.
+![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
+![Code style: black](https://img.shields.io/badge/code_style-black-black.svg)
+![CI](https://github.com/ig-rudenko/ecstasy-sdk/actions/workflows/ci-publish.yml/badge.svg)
+
+---
+
+Python SDK для работы с [Ecstasy](https://github.com/ig-rudenko/ecstasy) API.
 
 Библиотека предоставляет синхронный и асинхронный клиенты, Pydantic-схемы запросов и ответов, типизированные resource-клиенты по группам API и единый транспорт на базе `httpx`.
 
@@ -8,32 +14,12 @@ Python SDK для работы с [Ecstasy](https://github.com/ig-rudenko/ecstas
 
 - Sync клиент: `EcstasyClient`.
 - Async клиент: `AsyncEcstasyClient`.
-- Авторизация через заголовок `Authorization`.
-- Поддержка базового пути API `/api/v1`.
 - Pydantic v2 модели для swagger definitions.
-- Resource-клиенты для `Accounts`, `Devices`, `GPON`, `Gather`, `Maps`, `Ring Manager`, `Tools`.
-- DRF pagination через `Page[T]`.
-- Единая иерархия SDK-исключений.
-- Типизированный пакет с `py.typed`.
 
 ## Установка
 
-После публикации в PyPI:
-
 ```bash
 pip install ecstasy-sdk
-```
-
-Для локальной разработки:
-
-```bash
-uv sync
-```
-
-Для запуска тестов и инструментов разработки:
-
-```bash
-uv sync --extra dev
 ```
 
 ## Быстрый старт
