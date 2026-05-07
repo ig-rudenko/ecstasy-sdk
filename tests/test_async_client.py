@@ -20,7 +20,7 @@ async def test_async_client_sends_authorization_and_validates_response() -> None
 
     client = AsyncEcstasyClient(
         "https://example.com/",
-        "Token test",
+        "test",
         http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
 

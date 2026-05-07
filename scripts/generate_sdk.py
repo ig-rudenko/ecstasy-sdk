@@ -402,9 +402,12 @@ def build_core_files(files: dict[str, str]) -> None:
 
             @property
             def authorization_header(self) -> str:
-                """Возвращает значение заголовка Authorization."""
+                """Возвращает значение заголовка Authorization с префиксом Token."""
 
-                return self.token.get_secret_value()
+                token = self.token.get_secret_value().strip()
+                if token.lower().startswith("token "):
+                    return token
+                return f"Token {token}"
         ''')
     files["ecstasy_sdk/exceptions.py"] = dedent('''\
         """Исключения ecstasy-sdk."""

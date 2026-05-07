@@ -903,14 +903,15 @@ class FoundInterface(EcstasyModel):
     description: str
     vlans: str
     saved_time: str = Field(..., alias="savedTime")
+    vlans_saved_time: str = Field(..., alias="vlansSavedTime")
 
 
 class FoundDeviceInterfaces(EcstasyModel):
     """Схема `FoundDeviceInterfaces` из Ecstasy API."""
 
-    devices: str
+    device: str
     comments: list[Comment]
-    interfaces: FoundInterface
+    interface: FoundInterface
 
 
 class SearchInterfaceByDescResult(EcstasyModel):

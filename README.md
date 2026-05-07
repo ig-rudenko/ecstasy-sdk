@@ -45,7 +45,7 @@ from ecstasy_sdk import EcstasyClient
 
 client = EcstasyClient(
     base_url="https://ecstasy.example.com",
-    token="Token <api-token>",
+    token="<api-token>",
 )
 
 try:
@@ -61,7 +61,7 @@ finally:
 ```python
 from ecstasy_sdk import EcstasyClient
 
-with EcstasyClient("https://ecstasy.example.com", "Token <api-token>") as client:
+with EcstasyClient("https://ecstasy.example.com", "<api-token>") as client:
     page = client.devices.list(page=1)
     for device in page.results:
         print(device.name, device.ip)
@@ -76,7 +76,7 @@ from ecstasy_sdk import AsyncEcstasyClient
 async def main() -> None:
     async with AsyncEcstasyClient(
         base_url="https://ecstasy.example.com",
-        token="Token <api-token>",
+        token="<api-token>",
     ) as client:
         users = await client.accounts.get_myself()
         device = await client.devices.get("switch-01")
@@ -85,24 +85,21 @@ async def main() -> None:
 
 ## Авторизация
 
-Swagger описывает API key в заголовке `Authorization`, но не фиксирует формат значения. SDK не добавляет префикс автоматически.
+SDK всегда отправляет токен в заголовке `Authorization` с префиксом `Token`.
 
-Передавайте токен в том виде, который ожидает ваш сервер:
+Передавайте только значение API-токена без префикса:
 
 ```python
 client = EcstasyClient(
     base_url="https://ecstasy.example.com",
-    token="Token abc123",
+    token="abc123",
 )
 ```
 
-или:
+Итоговый HTTP-заголовок будет таким:
 
-```python
-client = EcstasyClient(
-    base_url="https://ecstasy.example.com",
-    token="Bearer abc123",
-)
+```text
+Authorization: Token abc123
 ```
 
 ## Resource-клиенты
@@ -203,7 +200,7 @@ SDK преобразует HTTP-ошибки в исключения `ecstasy_sd
 from ecstasy_sdk import EcstasyClient
 from ecstasy_sdk.exceptions import EcstasyAPIError, EcstasyForbiddenError
 
-client = EcstasyClient("https://ecstasy.example.com", "Token <api-token>")
+client = EcstasyClient("https://ecstasy.example.com", "<api-token>")
 
 try:
     device = client.devices.get("switch-01")

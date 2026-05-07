@@ -20,7 +20,7 @@ def test_client_sends_authorization_and_validates_response() -> None:
 
     client = EcstasyClient(
         "https://example.com/",
-        "Token test",
+        "test",
         http_client=httpx.Client(transport=httpx.MockTransport(handler)),
     )
 
@@ -50,7 +50,7 @@ def test_client_validates_paginated_response() -> None:
 
     client = EcstasyClient(
         "https://example.com",
-        "Token test",
+        "test",
         http_client=httpx.Client(transport=httpx.MockTransport(handler)),
     )
 
@@ -71,11 +71,33 @@ def test_client_raises_api_error() -> None:
 
     client = EcstasyClient(
         "https://example.com",
-        "Token test",
+        "test",
         http_client=httpx.Client(transport=httpx.MockTransport(handler)),
     )
 
     with pytest.raises(EcstasyForbiddenError):
         client.accounts.get_myself()
+
+    client.close()
+
+
+def test_client_does_not_duplicate_token_prefix() -> None:
+    """Проверяет совместимость со старым кодом, где префикс уже передан."""
+
+    seen: dict[str, str | None] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["authorization"] = request.headers.get("authorization")
+        return httpx.Response(200, json=[{"id": 1, "username": "admin"}])
+
+    client = EcstasyClient(
+        "https://example.com",
+        "Token test",
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    client.accounts.get_myself()
+
+    assert seen["authorization"] == "Token test"
 
     client.close()
