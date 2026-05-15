@@ -73,13 +73,26 @@ class BaseTransport:
             return body.model_dump(mode="json", by_alias=True, exclude_none=False)
         return dict(body)
 
+    def is_json_response(self, response: httpx.Response) -> bool:
+        """Проверяет, содержит ли ответ JSON-совместимый Content-Type."""
+
+        content_type = response.headers.get("content-type", "").lower()
+        media_type = content_type.split(";", 1)[0].strip()
+        return media_type == "application/json" or media_type.endswith("+json")
+
+    def problem_string(self, data: Mapping[str, Any], key: str) -> str | None:
+        """Возвращает строковое поле problem details."""
+
+        value = data.get(key)
+        return value if isinstance(value, str) else None
+
     def parse_response(self, response: httpx.Response, response_model: Any = None) -> Any:
         """Парсит и валидирует ответ API."""
 
         if response.status_code == 204:
             return None
         content_type = response.headers.get("content-type", "").lower()
-        if "application/json" in content_type:
+        if self.is_json_response(response):
             payload: Any = response.json()
         elif content_type.startswith("text/") or "html" in content_type:
             payload = response.text
@@ -99,12 +112,30 @@ class BaseTransport:
 
         if response.status_code < 400:
             return
-        response_json = None
+        response_json: dict[str, Any] | list[Any] | None = None
         try:
-            response_json = response.json()
+            raw_json = response.json()
         except ValueError:
-            response_json = None
-        message = f"Ecstasy API returned HTTP {response.status_code}"
+            raw_json = None
+        if isinstance(raw_json, dict | list):
+            response_json = raw_json
+        problem_type = None
+        title = None
+        detail = None
+        instance = None
+        errors: Any = None
+        if isinstance(response_json, dict):
+            problem_type = self.problem_string(response_json, "type")
+            title = self.problem_string(response_json, "title")
+            detail = self.problem_string(response_json, "detail")
+            instance = self.problem_string(response_json, "instance")
+            errors = response_json.get("errors")
+        if title and detail:
+            message = f"{title}: {detail}"
+        elif detail:
+            message = detail
+        else:
+            message = f"Ecstasy API returned HTTP {response.status_code}"
         error_class: type[EcstasyAPIError]
         if response.status_code == 400:
             error_class = EcstasyBadRequestError
@@ -130,4 +161,9 @@ class BaseTransport:
             request_id=response.headers.get("x-request-id"),
             response_text=response.text,
             response_json=response_json,
+            problem_type=problem_type,
+            title=title,
+            detail=detail,
+            instance=instance,
+            errors=errors,
         )

@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from ecstasy_sdk import EcstasyClient
-from ecstasy_sdk.exceptions import EcstasyForbiddenError
+from ecstasy_sdk.exceptions import EcstasyForbiddenError, EcstasyServerError
 from ecstasy_sdk.models import Devices, Page, User
 
 
@@ -77,6 +77,47 @@ def test_client_raises_api_error() -> None:
 
     with pytest.raises(EcstasyForbiddenError):
         client.accounts.get_myself()
+
+    client.close()
+
+
+def test_client_parses_problem_json_error() -> None:
+    """Проверяет разбор ошибок application/problem+json."""
+
+    problem = {
+        "type": "/api/problems/device-unavailable",
+        "title": "Device Unavailable",
+        "status": 503,
+        "detail": "Device unavailable.",
+        "instance": "/api/v1/devices/switch-01",
+        "errors": {"device": "switch-01"},
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            503,
+            request=request,
+            json=problem,
+            headers={"content-type": "application/problem+json"},
+        )
+
+    client = EcstasyClient(
+        "https://example.com",
+        "test",
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    with pytest.raises(EcstasyServerError) as exc_info:
+        client.accounts.get_myself()
+
+    exc = exc_info.value
+    assert str(exc) == "Device Unavailable: Device unavailable."
+    assert exc.problem_type == "/api/problems/device-unavailable"
+    assert exc.title == "Device Unavailable"
+    assert exc.detail == "Device unavailable."
+    assert exc.instance == "/api/v1/devices/switch-01"
+    assert exc.errors == {"device": "switch-01"}
+    assert exc.response_json == problem
 
     client.close()
 

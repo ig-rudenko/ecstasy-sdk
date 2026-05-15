@@ -4,17 +4,15 @@
 ![Code style: black](https://img.shields.io/badge/code_style-black-black.svg)
 ![CI](https://github.com/ig-rudenko/ecstasy-sdk/actions/workflows/ci-publish.yml/badge.svg)
 
----
-
 Python SDK для работы с [Ecstasy](https://github.com/ig-rudenko/ecstasy) API.
 
-Библиотека предоставляет синхронный и асинхронный клиенты, Pydantic-схемы запросов и ответов, типизированные resource-клиенты по группам API и единый транспорт на базе `httpx`.
+Библиотека предоставляет синхронный и асинхронный клиенты, Pydantic-модели запросов и ответов, типизированные resource-клиенты по группам API и единый транспорт на базе `httpx`.
 
 ## Возможности
 
 - Sync клиент: `EcstasyClient`.
 - Async клиент: `AsyncEcstasyClient`.
-- Pydantic v2 модели для swagger definitions.
+- Pydantic v2 модели.
 
 ## Установка
 
@@ -29,28 +27,17 @@ pip install ecstasy-sdk
 ```python
 from ecstasy_sdk import EcstasyClient
 
-client = EcstasyClient(
+with EcstasyClient(
     base_url="https://ecstasy.example.com",
     token="<api-token>",
-)
-
-try:
-    users = client.accounts.get_myself()
+) as client:
+    me = client.accounts.get_myself()
     device = client.devices.get("switch-01")
-    interfaces = client.devices.list_interfaces("switch-01")
-finally:
-    client.close()
-```
+    interfaces = client.devices.get_interfaces("switch-01", add_links=True)
 
-Можно использовать context manager:
-
-```python
-from ecstasy_sdk import EcstasyClient
-
-with EcstasyClient("https://ecstasy.example.com", "<api-token>") as client:
-    page = client.devices.list(page=1)
-    for device in page.results:
-        print(device.name, device.ip)
+    print(me.username)
+    print(device.name)
+    print(len(interfaces.interfaces))
 ```
 
 ### Асинхронный клиент
@@ -64,16 +51,16 @@ async def main() -> None:
         base_url="https://ecstasy.example.com",
         token="<api-token>",
     ) as client:
-        users = await client.accounts.get_myself()
+        me = await client.accounts.get_myself()
         device = await client.devices.get("switch-01")
-        interfaces = await client.devices.list_interfaces("switch-01")
+        interfaces = await client.devices.get_interfaces("switch-01")
+
+        print(me.username, device.name, len(interfaces.interfaces))
 ```
 
 ## Авторизация
 
-SDK всегда отправляет токен в заголовке `Authorization` с префиксом `Token`.
-
-Передавайте только значение API-токена без префикса:
+SDK отправляет токен в заголовке `Authorization`. Если передать токен без префикса, SDK добавит `Token` автоматически:
 
 ```python
 client = EcstasyClient(
@@ -82,7 +69,7 @@ client = EcstasyClient(
 )
 ```
 
-Итоговый HTTP-заголовок будет таким:
+Итоговый HTTP-заголовок:
 
 ```text
 Authorization: Token abc123
@@ -102,16 +89,19 @@ client.ring_manager
 client.tools
 ```
 
-Асинхронный клиент имеет те же группы и те же имена методов, но методы нужно вызывать через `await`.
+Асинхронный клиент имеет те же группы и те же имена методов, но методы вызываются через `await`.
 
 ## Примеры
 
 ### Accounts
 
 ```python
-users = client.accounts.get_myself()
+me = client.accounts.get_myself()
 permissions = client.accounts.get_permissions()
-oidc_config = client.accounts.get_oidc_config()
+oidc = client.accounts.get_oidc_config()
+
+print(me.username)
+print(oidc.authorization_endpoint)
 ```
 
 ### Devices
@@ -121,12 +111,12 @@ devices_page = client.devices.list(page=1, group="access")
 all_devices = client.devices.list_all(vendor="Huawei")
 
 device = client.devices.get("switch-01")
-interfaces = client.devices.list_interfaces(
+interfaces = client.devices.get_interfaces(
     "switch-01",
     add_links=True,
     add_comments=True,
 )
-macs = client.devices.list_macs("switch-01", port="GigabitEthernet0/1")
+macs = client.devices.get_macs("switch-01", port="GigabitEthernet0/1")
 configs = client.devices.list_configs("switch-01")
 ```
 
@@ -139,7 +129,7 @@ payload = DevicesDetailUpdate(
     ip="192.0.2.10",
     name="switch-01",
     auth_group=1,
-    group="access",
+    group=2,
 )
 
 updated = client.devices.update("switch-01", payload)
@@ -148,11 +138,12 @@ updated = client.devices.update("switch-01", payload)
 ### GPON
 
 ```python
-customers = client.gpon.list_customers()
+customers = client.gpon.list_customers(page=1, search="Иванов")
 customer = client.gpon.get_customers("123")
 
-subscriber_data = client.gpon.list_subscriber_data()
-tech_data = client.gpon.get_tech_data("olt-01")
+subscriber_data = client.gpon.list_subscriber_data(contract="100200")
+tech_data = client.gpon.get_tech_data("olt-01", port="0/1")
+end3 = client.gpon.list_tech_data_end3(street="Ленина", house="10")
 ```
 
 ### Tools
@@ -161,8 +152,26 @@ tech_data = client.gpon.get_tech_data("olt-01")
 vendor = client.tools.get_mac_vendor("00:11:22:33:44:55")
 vlan_desc = client.tools.get_vlan_desc(vlan=100)
 trace = client.tools.get_vlan_traceroute(vlan=100, graph_min_length=3)
-found = client.tools.find_by_desc(pattern="client", is_regex=False)
+found = client.tools.get_find_by_desc(pattern="client", is_regex=False)
 ```
+
+## Модели
+
+Модели экспортируются из `ecstasy_sdk.models`:
+
+```python
+from ecstasy_sdk.models import OIDC, BrasPairSessionResult, DeviceInfo, DevicesDetail
+```
+
+Имена моделей очищаются от технических суффиксов OpenAPI. Например, модель результата BRAS-сессий доступна как `BrasPairSessionResult`, а поля с аббревиатурами сохраняют читаемые Python-имена:
+
+```python
+result.bras1
+device.device_ip
+subscriber.connection_id
+```
+
+Оригинальные имена JSON-полей сохраняются через Pydantic alias.
 
 ## Пагинация
 
@@ -212,22 +221,46 @@ finally:
 - `EcstasyTimeoutError` для timeout.
 - `EcstasyResponseValidationError` для ошибок Pydantic-валидации ответа.
 
+### Problem Details
+
+Если API возвращает `application/problem+json`, SDK сохраняет поля RFC 9457 в `EcstasyAPIError`:
+
+```python
+try:
+    client.devices.get("switch-01")
+except EcstasyAPIError as exc:
+    print(exc.title)
+    print(exc.detail)
+    print(exc.problem_type)
+    print(exc.instance)
+    print(exc.errors)
+```
+
+Полный payload также доступен в `exc.response_json`.
+
 ## Сырые ответы
 
-Если в swagger для endpoint'а нет response schema, SDK возвращает raw payload:
+Если в OpenAPI-документации для endpoint'а нет response schema, SDK возвращает raw payload:
 
-- `dict[str, Any]` или `list[Any]` для JSON;
+- `dict[str, Any]` или `list[Any]` для JSON и `*+json`;
 - `str` для текстовых ответов;
 - `bytes` для бинарных ответов;
 - `None` для HTTP 204.
 
-## Генерация кода из swagger
+## Генерация кода из OpenAPI
 
 Основной код моделей и resource-клиентов можно регенерировать из `docs/swagger.json`:
 
 ```bash
 uv run python scripts/generate_sdk.py
 ```
+
+Генератор обновляет:
+
+- `ecstasy_sdk/models/`;
+- `ecstasy_sdk/resources/`;
+- `ecstasy_sdk/async_resources/`;
+- базовые клиентские и транспортные файлы, которые создаются шаблонами генератора.
 
 После регенерации нужно выполнить проверки:
 
@@ -240,9 +273,9 @@ uv run python scripts/generate_sdk.py
 Текущий набор проверок:
 
 ```bash
-uv run ruff check --fix ecstasy_sdk
-uv run black -l 110 ecstasy_sdk
-uv run mypy ecstasy_sdk
+uv run ruff check --fix ecstasy_sdk scripts tests
+uv run black -l 110 ecstasy_sdk scripts tests
+uv run mypy ecstasy_sdk scripts tests
 uv run --extra dev pytest
 ```
 

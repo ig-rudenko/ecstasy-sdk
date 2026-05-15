@@ -32,6 +32,11 @@ class EcstasyAPIError(EcstasyError):
         request_id: str | None = None,
         response_text: str = "",
         response_json: dict[str, Any] | list[Any] | None = None,
+        problem_type: str | None = None,
+        title: str | None = None,
+        detail: str | None = None,
+        instance: str | None = None,
+        errors: Any = None,
     ) -> None:
         """Инициализирует ошибку API."""
 
@@ -42,6 +47,11 @@ class EcstasyAPIError(EcstasyError):
         self.request_id = request_id
         self.response_text = response_text
         self.response_json = response_json
+        self.problem_type = problem_type
+        self.title = title
+        self.detail = detail
+        self.instance = instance
+        self.errors = errors
 
 
 class EcstasyBadRequestError(EcstasyAPIError):
