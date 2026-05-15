@@ -11,8 +11,8 @@ from ecstasy_sdk.async_resources.tools import AsyncToolsResource
 __all__ = [
     "AsyncAccountsResource",
     "AsyncDevicesResource",
-    "AsyncGponResource",
     "AsyncGatherResource",
+    "AsyncGponResource",
     "AsyncMapsResource",
     "AsyncRingManagerResource",
     "AsyncToolsResource",

@@ -11,8 +11,8 @@ from ecstasy_sdk.resources.tools import ToolsResource
 __all__ = [
     "AccountsResource",
     "DevicesResource",
-    "GponResource",
     "GatherResource",
+    "GponResource",
     "MapsResource",
     "RingManagerResource",
     "ToolsResource",

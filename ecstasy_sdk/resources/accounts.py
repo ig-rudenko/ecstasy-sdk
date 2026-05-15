@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
-
 from ecstasy_sdk.models import (
+    OIDC,
     User,
     UserPermissions,
 )
@@ -18,26 +17,19 @@ class AccountsResource:
         self._transport = transport
 
     def get_myself(self) -> User:
-        """Выполняет операцию Ecstasy API.
-
+        """
         operationId: accounts_myself_list.
         """
 
         path_params = None
         query = None
         return self._transport.request(
-            "GET",
-            "/accounts/myself",
-            path_params=path_params,
-            query=query,
-            body=None,
-            response_model=User,
+            "GET", "/accounts/myself", path_params=path_params, query=query, body=None, response_model=User
         )
 
-    def get_permissions(self) -> UserPermissions:
-        """Выполняет операцию Ecstasy API.
-
-        operationId: accounts_myself_permissions.
+    def get_myself_permissions(self) -> UserPermissions:
+        """
+        operationId: accounts_myself_permissions_list.
         """
 
         path_params = None
@@ -51,9 +43,8 @@ class AccountsResource:
             response_model=UserPermissions,
         )
 
-    def get_oidc_config(self) -> Any:
-        """Выполняет операцию Ecstasy API.
-
+    def get_oidc_config(self) -> OIDC:
+        """
         operationId: accounts_oidc_config_list.
         """
 
@@ -65,5 +56,7 @@ class AccountsResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=OIDC,
         )
+
+    get_permissions = get_myself_permissions

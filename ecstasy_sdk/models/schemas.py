@@ -1,4 +1,4 @@
-"""Pydantic-схемы, сгенерированные из docs/swagger.json."""
+"""Pydantic-схемы, сгенерированные из OpenAPI-документации."""
 
 from __future__ import annotations
 
@@ -10,53 +10,97 @@ from ecstasy_sdk.models.base import EcstasyModel
 
 
 class User(EcstasyModel):
-    """Схема `User` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
-    username: str
+    username: str = Field(
+        ..., description="Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_."
+    )
     email: str | None = None
     first_name: str | None = None
     last_name: str | None = None
-    is_staff: bool | None = None
-    is_superuser: bool | None = None
-    is_active: bool | None = None
+    is_staff: bool | None = Field(
+        None, description="Отметьте, если пользователь может входить в административную часть сайта."
+    )
+    is_superuser: bool | None = Field(
+        None, description="Указывает, что пользователь имеет все права без явного их назначения."
+    )
+    is_active: bool | None = Field(
+        None,
+        description="Отметьте, если пользователь должен считаться активным. Уберите эту отметку вместо удаления учётной записи.",
+    )
     date_joined: str | None = None
 
 
 class UserPermissions(EcstasyModel):
-    """Схема `UserPermissions` из Ecstasy API."""
-
     permissions: list[str]
-    console: str | None = None
-    ecstasy_loop_url: str | None = None
+    console: str | None
+    ecstasy_loop_url: str | None
+
+
+class OIDC(EcstasyModel):
+    enabled: bool
+    url: str
+    client_id: str = Field(..., alias="clientId")
+    realm: str
+    authorization_endpoint: str = Field(..., alias="authorizationEndpoint")
+    token_endpoint: str = Field(..., alias="tokenEndpoint")
+    userinfo_endpoint: str = Field(..., alias="userinfoEndpoint")
+    logout_endpoint: str = Field(..., alias="logoutEndpoint")
 
 
 class Devices(EcstasyModel):
-    """Схема `Devices` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
-    ip: str
-    name: str
-    vendor: str | None = None
+    ip: str = Field(..., description="ipv4")
+    name: str = Field(..., description="Уникальное поле")
+    vendor: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
     group: str
     auth_group: int
-    model: str | None = None
-    serial_number: str | None = None
-    os_version: str | None = None
-    port_scan_protocol: str | None = None
-    cmd_protocol: str | None = None
+    model: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    serial_number: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    os_version: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    port_scan_protocol: str | None = Field(
+        None,
+        description="Выберите протокол, с помощью которого будет осуществляться сканирование интерфейсов",
+    )
+    cmd_protocol: str | None = Field(
+        None,
+        description="Выберите протокол, с помощью которого будет осуществляться подключение для вызова команд (например: поиск MAC адресов или сброс порта)",
+    )
     active: bool | None = None
-    collect_interfaces: bool | None = None
-    collect_mac_addresses: bool | None = None
-    collect_vlan_info: bool | None = None
-    collect_configurations: bool | None = None
-    connection_pool_size: int | None = None
+    collect_interfaces: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны интерфейсы во время периодической задачи "interfaces_scan"',
+    )
+    collect_mac_addresses: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны MAC адреса во время периодической задачи "mac_table_gather_task"',
+    )
+    collect_vlan_info: bool | None = Field(
+        None,
+        description='Если включено, то будет собрана VLAN информация во время периодической задачи "vlan_table_gather_task"',
+    )
+    collect_configurations: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны конфигурации во время периодической задачи "configuration_gather_task"',
+    )
+    connection_pool_size: int | None = Field(
+        None, description="Количество подключений к оборудованию, которые могут быть одновременно открыты"
+    )
     console_url: str | None = None
 
 
-class BulkDeviceCommandExecution(EcstasyModel):
-    """Схема `BulkDeviceCommandExecution` из Ecstasy API."""
+class GetDeviceByZabbix(EcstasyModel):
+    device: str
 
+
+class BulkDeviceCommandExecution(EcstasyModel):
     id_: int | None = Field(None, alias="id")
     task_id: str
     user: str
@@ -76,8 +120,6 @@ class BulkDeviceCommandExecution(EcstasyModel):
 
 
 class BulkDeviceCommandExecutionResult(EcstasyModel):
-    """Схема `BulkDeviceCommandExecutionResult` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     device_id: int | None = Field(..., alias="deviceId")
     device_name: str = Field(..., alias="deviceName")
@@ -92,8 +134,6 @@ class BulkDeviceCommandExecutionResult(EcstasyModel):
 
 
 class BulkCommandTaskResult(EcstasyModel):
-    """Схема `BulkCommandTaskResult` из Ecstasy API."""
-
     device_id: int = Field(..., alias="deviceId")
     device_name: str = Field(..., alias="deviceName")
     status: str
@@ -106,8 +146,6 @@ class BulkCommandTaskResult(EcstasyModel):
 
 
 class BulkCommandTaskStatus(EcstasyModel):
-    """Схема `BulkCommandTaskStatus` из Ecstasy API."""
-
     task_id: str = Field(..., alias="taskId")
     status: str
     progress: int | None = None
@@ -119,8 +157,6 @@ class BulkCommandTaskStatus(EcstasyModel):
 
 
 class ExecuteBulkDeviceCommandRequest(EcstasyModel):
-    """Схема `ExecuteBulkDeviceCommandRequest` из Ecstasy API."""
-
     device_ids: list[int]
     port: dict[str, str] | None = None
     ip: dict[str, str] | None = None
@@ -130,63 +166,47 @@ class ExecuteBulkDeviceCommandRequest(EcstasyModel):
 
 
 class BulkCommandLaunchDevice(EcstasyModel):
-    """Схема `BulkCommandLaunchDevice` из Ecstasy API."""
-
     device_id: int = Field(..., alias="deviceId")
     device_name: str = Field(..., alias="deviceName")
     detail: str | None = None
 
 
 class BulkCommandLaunchResponse(EcstasyModel):
-    """Схема `BulkCommandLaunchResponse` из Ecstasy API."""
-
     task_id: str = Field(..., alias="taskId")
     devices: list[BulkCommandLaunchDevice]
     skipped: list[BulkCommandLaunchDevice]
 
 
 class InterfacesComments(EcstasyModel):
-    """Схема `InterfacesComments` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     interface: str
     comment: str
     user: int | None = None
-    device: str
+    device: str = Field(..., description="Название оборудования")
 
 
 class BrassSession(EcstasyModel):
-    """Схема `BrassSession` из Ecstasy API."""
-
     mac: str
     device: str | None = None
     port: str | None = None
 
 
 class CutBrasSession(EcstasyModel):
-    """Схема `CutBrasSession` из Ecstasy API."""
-
     errors: list[str]
     port_reload_status: str = Field(..., alias="portReloadStatus")
 
 
 class BrasSession(EcstasyModel):
-    """Схема `BrasSession` из Ecstasy API."""
-
     session: str | None
     errors: list[str]
 
 
 class BrasPairSessionResult(EcstasyModel):
-    """Схема `BrasPairSessionResult` из Ecstasy API."""
-
-    b_r_a_s1: BrasSession = Field(..., alias="BRAS1")
-    b_r_a_s2: BrasSession = Field(..., alias="BRAS2")
+    bras1: BrasSession = Field(..., alias="BRAS1")
+    bras2: BrasSession = Field(..., alias="BRAS2")
 
 
 class InterfaceWorkload(EcstasyModel):
-    """Схема `InterfaceWorkload` из Ecstasy API."""
-
     count: int
     abons: int
     abons_up: int
@@ -198,9 +218,7 @@ class InterfaceWorkload(EcstasyModel):
 
 
 class DevicesInterfaceWorkload(EcstasyModel):
-    """Схема `DevicesInterfaceWorkload` из Ecstasy API."""
-
-    interfaces_count: list[InterfaceWorkload]
+    interfaces_count: InterfaceWorkload
     ip: str
     name: str
     vendor: str | None
@@ -209,198 +227,181 @@ class DevicesInterfaceWorkload(EcstasyModel):
 
 
 class DevicesInterfaceWorkloadResult(EcstasyModel):
-    """Схема `DevicesInterfaceWorkloadResult` из Ecstasy API."""
-
     devices_count: int
     devices: list[DevicesInterfaceWorkload]
 
 
 class DeviceAuthGroup(EcstasyModel):
-    """Схема `DeviceAuthGroup` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     name: str
     description: str | None = None
 
 
 class DeviceGroup(EcstasyModel):
-    """Схема `DeviceGroup` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     name: str
     description: str | None = None
 
 
 class DevicesDetail(EcstasyModel):
-    """Схема `DevicesDetail` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
-    ip: str
-    name: str
-    model: str | None = None
-    vendor: str | None = None
-    serial_number: str | None = None
-    os_version: str | None = None
+    ip: str = Field(..., description="ipv4")
+    name: str = Field(..., description="Уникальное поле")
+    model: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    vendor: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    serial_number: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    os_version: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
     auth_group: DeviceAuthGroup
     group: DeviceGroup
-    snmp_community: str | None = None
-    port_scan_protocol: str | None = None
-    cmd_protocol: str | None = None
-    interface_pattern: str | None = None
+    snmp_community: str | None = Field(
+        None, description="Версия - v2c. Используется для сбора интерфейсов, если указан протокол - SNMP"
+    )
+    port_scan_protocol: str | None = Field(
+        None,
+        description="Выберите протокол, с помощью которого будет осуществляться сканирование интерфейсов",
+    )
+    cmd_protocol: str | None = Field(
+        None,
+        description="Выберите протокол, с помощью которого будет осуществляться подключение для вызова команд (например: поиск MAC адресов или сброс порта)",
+    )
+    interface_pattern: str | None = Field(
+        None,
+        description="Паттерн, по которому отфильтрованы интерфейсы. Например `^gi\\S+|^eth\\S+`. По умолчанию все интерфейсы.",
+    )
     active: bool | None = None
-    collect_interfaces: bool | None = None
-    collect_mac_addresses: bool | None = None
-    collect_vlan_info: bool | None = None
-    collect_configurations: bool | None = None
-    connection_pool_size: int | None = None
+    collect_interfaces: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны интерфейсы во время периодической задачи "interfaces_scan"',
+    )
+    collect_mac_addresses: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны MAC адреса во время периодической задачи "mac_table_gather_task"',
+    )
+    collect_vlan_info: bool | None = Field(
+        None,
+        description='Если включено, то будет собрана VLAN информация во время периодической задачи "vlan_table_gather_task"',
+    )
+    collect_configurations: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны конфигурации во время периодической задачи "configuration_gather_task"',
+    )
+    connection_pool_size: int | None = Field(
+        None, description="Количество подключений к оборудованию, которые могут быть одновременно открыты"
+    )
 
 
 class DevicesDetailUpdate(EcstasyModel):
-    """Схема `DevicesDetailUpdate` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
-    ip: str
-    name: str
-    model: str | None = None
-    vendor: str | None = None
-    serial_number: str | None = None
-    os_version: str | None = None
-    auth_group: int
+    ip: str = Field(..., description="ipv4")
+    name: str = Field(..., description="Уникальное поле")
+    model: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    vendor: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    serial_number: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    os_version: str | None = Field(
+        None, description="Если не указано, то обновится автоматически при подключении к устройству"
+    )
+    auth_group: int = Field(
+        ...,
+        description="Указываем группу, для удаленного подключения к оборудованию. Используется для протоколов telnet и ssh. Если на оборудовании логин/пароль из указанной группы не подошли, то будут автоматически подбираться пары логин/пароль по очереди, указанной в этом списке (кроме неверного)",
+    )
     group: int
-    snmp_community: str | None = None
-    port_scan_protocol: str | None = None
-    cmd_protocol: str | None = None
-    interface_pattern: str | None = None
+    snmp_community: str | None = Field(
+        None, description="Версия - v2c. Используется для сбора интерфейсов, если указан протокол - SNMP"
+    )
+    port_scan_protocol: str | None = Field(
+        None,
+        description="Выберите протокол, с помощью которого будет осуществляться сканирование интерфейсов",
+    )
+    cmd_protocol: str | None = Field(
+        None,
+        description="Выберите протокол, с помощью которого будет осуществляться подключение для вызова команд (например: поиск MAC адресов или сброс порта)",
+    )
+    interface_pattern: str | None = Field(
+        None,
+        description="Паттерн, по которому отфильтрованы интерфейсы. Например `^gi\\S+|^eth\\S+`. По умолчанию все интерфейсы.",
+    )
     active: bool | None = None
-    collect_interfaces: bool | None = None
-    collect_mac_addresses: bool | None = None
-    collect_vlan_info: bool | None = None
-    collect_configurations: bool | None = None
-    connection_pool_size: int | None = None
+    collect_interfaces: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны интерфейсы во время периодической задачи "interfaces_scan"',
+    )
+    collect_mac_addresses: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны MAC адреса во время периодической задачи "mac_table_gather_task"',
+    )
+    collect_vlan_info: bool | None = Field(
+        None,
+        description='Если включено, то будет собрана VLAN информация во время периодической задачи "vlan_table_gather_task"',
+    )
+    collect_configurations: bool | None = Field(
+        None,
+        description='Если включено, то будут собраны конфигурации во время периодической задачи "configuration_gather_task"',
+    )
+    connection_pool_size: int | None = Field(
+        None, description="Количество подключений к оборудованию, которые могут быть одновременно открыты"
+    )
 
 
 class UserDeviceAction(EcstasyModel):
-    """Схема `UserDeviceAction` из Ecstasy API."""
-
     time: str | None = None
     user: str
     action: str
 
 
 class ChangeDescriptionRequest(EcstasyModel):
-    """Схема `ChangeDescriptionRequest` из Ecstasy API."""
-
     port: str
     description: str
 
 
 class ChangeDescription(EcstasyModel):
-    """Схема `ChangeDescription` из Ecstasy API."""
-
     description: str
     port: str
     saved: str
 
 
 class ADSLProfile(EcstasyModel):
-    """Схема `ADSLProfile` из Ecstasy API."""
-
     index: int
     port: str
 
 
-class DeviceCommands(EcstasyModel):
-    """Схема `DeviceCommands` из Ecstasy API."""
+class CollectConfigResponse(EcstasyModel):
+    status: str
 
+
+class DeviceCommands(EcstasyModel):
     id_: int | None = Field(None, alias="id")
-    name: str
+    name: str = Field(..., description="Кратко, что она делает")
     description: str | None = None
-    command: str
-    device_vendor: str
+    command: str = Field(
+        ...,
+        description="Вы можете использовать макросы - {port}, чтобы подставить название интерфейса, а также {ip}, {mac}",
+    )
+    device_vendor: str = Field(
+        ..., description="Команда будет доступна только оборудованию с тем же вендором"
+    )
 
 
 class ConfigFile(EcstasyModel):
-    """Схема `ConfigFile` из Ecstasy API."""
-
     name: str
     size: int
     mod_time: str = Field(..., alias="modTime")
 
 
-class DeviceZabbixInventory(EcstasyModel):
-    type: str = ""
-    type_full: str = ""
-    name: str = ""
-    alias: str = ""
-    os: str = ""
-    os_full: str = ""
-    os_short: str = ""
-    serialno_a: str = ""
-    serialno_b: str = ""
-    tag: str = ""
-    asset_tag: str = ""
-    macaddress_a: str = ""
-    macaddress_b: str = ""
-    hardware: str = ""
-    hardware_full: str = ""
-    software: str = ""
-    software_full: str = ""
-    software_app_a: str = ""
-    software_app_b: str = ""
-    software_app_c: str = ""
-    software_app_d: str = ""
-    software_app_e: str = ""
-    contact: str = ""
-    location: str = ""
-    location_lat: str = ""
-    location_lon: str = ""
-    notes: str = ""
-    chassis: str = ""
-    model: str = ""
-    hw_arch: str = ""
-    vendor: str = ""
-    contract_number: str = ""
-    installer_name: str = ""
-    deployment_status: str = ""
-    url_a: str = ""
-    url_b: str = ""
-    url_c: str = ""
-    host_networks: str = ""
-    host_netmask: str = ""
-    host_router: str = ""
-    oob_ip: str = ""
-    oob_netmask: str = ""
-    oob_router: str = ""
-    date_hw_purchase: str = ""
-    date_hw_install: str = ""
-    date_hw_expiry: str = ""
-    date_hw_decomm: str = ""
-    site_address_a: str = ""
-    site_address_b: str = ""
-    site_address_c: str = ""
-    site_city: str = ""
-    site_state: str = ""
-    site_country: str = ""
-    site_zip: str = ""
-    site_rack: str = ""
-    site_notes: str = ""
-    poc_1_name: str = ""
-    poc_1_email: str = ""
-    poc_1_phone_a: str = ""
-    poc_1_phone_b: str = ""
-    poc_1_cell: str = ""
-    poc_1_screen: str = ""
-    poc_1_notes: str = ""
-    poc_2_name: str = ""
-    poc_2_email: str = ""
-    poc_2_phone_a: str = ""
-    poc_2_phone_b: str = ""
-    poc_2_cell: str = ""
-    poc_2_screen: str = ""
-    poc_2_notes: str = ""
-
-
-class DeviceZabbixMap(EcstasyModel):
+class ZabbixMap(EcstasyModel):
     sysmapid: int
     name: str
 
@@ -408,34 +409,33 @@ class DeviceZabbixMap(EcstasyModel):
 class DeviceZabbixInfo(EcstasyModel):
     description: str
     monitoring_available: bool = Field(..., alias="monitoringAvailable")
-    inventory: DeviceZabbixInventory
-    maps: list[DeviceZabbixMap]
+    inventory: dict[str, str | None]
+    maps: list[ZabbixMap]
 
 
 class DeviceInfo(EcstasyModel):
-    """Схема `DeviceInfo` из Ecstasy API."""
-
     device_name: str = Field(..., alias="deviceName")
     device_ip: str = Field(..., alias="deviceIP")
+    vendor: str | None
+    model: str | None
+    serial_number: str | None = Field(..., alias="serialNumber")
+    os_version: str | None = Field(..., alias="osVersion")
     elastic_stack_link: str = Field(..., alias="elasticStackLink")
-    zabbix_host_id: int = Field(..., alias="zabbixHostID")
+    zabbix_host_id: str = Field(..., alias="zabbixHostID")
+    zabbix_url: str = Field(..., alias="zabbixURL")
     zabbix_info: DeviceZabbixInfo = Field(..., alias="zabbixInfo")
     permission: int
-    coords: list[float]
+    coords: list[float] | None
     uptime: int
     console_url: str = Field(..., alias="consoleURL")
 
 
 class PortDetailInfo(EcstasyModel):
-    """Схема `PortDetailInfo` из Ecstasy API."""
-
     type_: str = Field(..., alias="type")
     data: str | None = None
 
 
 class InterfaceDetailInfo(EcstasyModel):
-    """Схема `InterfaceDetailInfo` из Ecstasy API."""
-
     port_detail_info: PortDetailInfo = Field(..., alias="portDetailInfo")
     port_config: str = Field(..., alias="portConfig")
     port_type: str = Field(..., alias="portType")
@@ -444,23 +444,17 @@ class InterfaceDetailInfo(EcstasyModel):
 
 
 class LinkToAnotherDevice(EcstasyModel):
-    """Схема `LinkToAnotherDevice` из Ecstasy API."""
-
     device_name: str = Field(..., alias="deviceName")
     url: str
 
 
 class InterfaceComment(EcstasyModel):
-    """Схема `InterfaceComment` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     user: str
     text: str
 
 
 class InterfaceInfo(EcstasyModel):
-    """Схема `InterfaceInfo` из Ecstasy API."""
-
     name: str
     status: str
     description: str
@@ -470,31 +464,23 @@ class InterfaceInfo(EcstasyModel):
 
 
 class InterfacesList(EcstasyModel):
-    """Схема `InterfacesList` из Ecstasy API."""
-
     interfaces: list[InterfaceInfo]
     device_available: bool = Field(..., alias="deviceAvailable")
     collected: str
 
 
 class MacList(EcstasyModel):
-    """Схема `MacList` из Ecstasy API."""
-
-    vlan_i_d: int = Field(..., alias="vlanID")
+    vlan_id: int = Field(..., alias="vlanID")
     mac: str
     vlan_name: str = Field(..., alias="vlanName")
 
 
 class MacListResult(EcstasyModel):
-    """Схема `MacListResult` из Ecstasy API."""
-
     result: list[MacList]
     count: int
 
 
 class DeviceMedia(EcstasyModel):
-    """Схема `DeviceMedia` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     file: str | None = None
     name: str | None = None
@@ -506,67 +492,49 @@ class DeviceMedia(EcstasyModel):
 
 
 class DevicePoolStatuses(EcstasyModel):
-    """Схема `DevicePoolStatuses` из Ecstasy API."""
-
     connection_pool_size: int = Field(..., alias="connectionPoolSize")
     statuses: list[bool]
 
 
 class PortControl(EcstasyModel):
-    """Схема `PortControl` из Ecstasy API."""
-
     port: str
     status: str
     save: bool
 
 
 class PoEPortStatus(EcstasyModel):
-    """Схема `PoEPortStatus` из Ecstasy API."""
-
     port: str
     status: str
 
 
 class DeviceViewings(EcstasyModel):
-    """Схема `DeviceViewings` из Ecstasy API."""
-
     username: str | None = None
     started: str | None = None
     updated: str | None = None
 
 
 class DeviceVlanPort(EcstasyModel):
-    """Схема `DeviceVlanPort` из Ecstasy API."""
-
     port: str
     desc: str | None = None
 
 
 class DeviceVlan(EcstasyModel):
-    """Схема `DeviceVlan` из Ecstasy API."""
-
     ports: list[DeviceVlanPort]
     vlan: int
-    desc: str
+    desc: str | None = None
     datetime: str | None = None
 
 
 class MacGatherScanTask(EcstasyModel):
-    """Схема `MacGatherScanTask` из Ecstasy API."""
-
     task_id: str | None = None
 
 
 class MacGatherStatus(EcstasyModel):
-    """Схема `MacGatherStatus` из Ecstasy API."""
-
     status: str | None = None
-    progress: str | None = None
+    progress: float | None = None
 
 
 class Nodes(EcstasyModel):
-    """Схема `Nodes` из Ecstasy API."""
-
     id_: str = Field(..., alias="id")
     label: str
     shape: str
@@ -574,8 +542,6 @@ class Nodes(EcstasyModel):
 
 
 class Edges(EcstasyModel):
-    """Схема `Edges` из Ecstasy API."""
-
     to: str
     title: str
     value: int
@@ -584,15 +550,49 @@ class Edges(EcstasyModel):
 
 
 class MacTraceroute(EcstasyModel):
-    """Схема `MacTraceroute` из Ecstasy API."""
-
     nodes: list[Nodes]
     edges: list[Edges]
 
 
-class BuildingAddress(EcstasyModel):
-    """Схема `BuildingAddress` из Ecstasy API."""
+class VlanPort(EcstasyModel):
+    id_: int | None = Field(None, alias="id")
+    vlan_id: int | None = None
+    vlan_desc: str | None = None
+    vlan: int | None = None
+    device_id: int | None = None
+    device_name: str | None = None
+    device_ip: str | None = None
+    port: str
+    desc: str | None = None
 
+
+class VlanGatherScanTask(EcstasyModel):
+    task_id: str | None = None
+
+
+class VlanGatherStatus(EcstasyModel):
+    status: str | None = None
+    progress: float | None = None
+
+
+class ShortVlanPort(EcstasyModel):
+    id_: int | None = Field(None, alias="id")
+    port: str
+    desc: str | None = None
+
+
+class Vlan(EcstasyModel):
+    id_: int | None = Field(None, alias="id")
+    vlan: int
+    desc: str | None = None
+    device_id: int | None = None
+    device_name: str | None = None
+    device_ip: str | None = None
+    datetime: str | None = None
+    ports: list[ShortVlanPort] | None = None
+
+
+class BuildingAddress(EcstasyModel):
     id_: int | None = Field(None, alias="id")
     region: str
     settlement: str
@@ -601,36 +601,34 @@ class BuildingAddress(EcstasyModel):
     house: str
     block: str
     building_type: bool
-    floors: int
-    total_entrances: int
+    building_id: int | None = None
+    floors: int = Field(..., description="кол-во этажей")
+    total_entrances: int = Field(..., description="Кол-во подъездов")
 
 
 class Address(EcstasyModel):
-    """Схема `Address` из Ecstasy API."""
-
     region: str | None = None
-    settlement: str | None = None
+    settlement: str | None = Field(None, description="Любимовка, Верхнесадовое")
     plan_structure: str | None = Field(None, alias="planStructure")
-    street: str | None = None
-    house: str
+    street: str | None = Field(
+        None,
+        description="Полное название с указанием типа (улица/проспект/проезд/бульвар/шоссе/переулок/тупик)",
+    )
+    house: str = Field(..., description="Можно с буквой (русской)")
     block: int | None = None
     floor: int | None = None
     apartment: int | None = None
 
 
 class End3(EcstasyModel):
-    """Схема `End3` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     address: Address
-    capacity: int
+    capacity: int = Field(..., description="Кол-во портов/волокон")
     location: str
     type_: str = Field(..., alias="type")
 
 
 class CommonCustomerSerializer(EcstasyModel):
-    """Схема `CommonCustomerSerializer` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     type_: str = Field(..., alias="type")
     first_name: str | None = Field(..., alias="firstName")
@@ -642,17 +640,13 @@ class CommonCustomerSerializer(EcstasyModel):
 
 
 class SubscriberHouseOLTState(EcstasyModel):
-    """Схема `SubscriberHouseOLTState` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     house_address: Address | None = Field(None, alias="houseAddress")
     device_name: str | None = Field(None, alias="deviceName")
     device_port: str | None = Field(None, alias="devicePort")
 
 
-class SubscriberConnection(EcstasyModel):
-    """Схема `SubscriberConnection` из Ecstasy API."""
-
+class ViewSubscriberConnectionSerializer(EcstasyModel):
     id_: int | None = Field(None, alias="id")
     address: Address
     ip: str | None = None
@@ -666,35 +660,33 @@ class SubscriberConnection(EcstasyModel):
     services: list[str]
     status: str
     tech_capability_id: int
-    house_o_l_t_state: list[SubscriberHouseOLTState] | None = Field(None, alias="houseOLTState")
+    house_olt_state: list[SubscriberHouseOLTState] | None = Field(None, alias="houseOLTState")
     end3: End3
     end3_port: int = Field(..., alias="end3Port")
 
 
 class CustomerDetail(EcstasyModel):
-    """Схема `CustomerDetail` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     type_: str = Field(..., alias="type")
     first_name: str | None = Field(..., alias="firstName")
     surname: str | None = None
-    connections: list[SubscriberConnection] | None = None
+    connections: list[ViewSubscriberConnectionSerializer] | None = None
     last_name: str | None = Field(..., alias="lastName")
     company_name: str | None = Field(..., alias="companyName")
     contract: str
     phone: str | None = None
 
 
-class OLTSubscriber(EcstasyModel):
-    """Схема `OLTSubscriber` из Ecstasy API."""
+class ErrorDetailResponse(EcstasyModel):
+    detail: str
 
+
+class OLTSubscriber(EcstasyModel):
     olt_port: str = Field(..., alias="oltPort")
     count: int
 
 
 class UpdateSubscriberData(EcstasyModel):
-    """Схема `UpdateSubscriberData` из Ecstasy API."""
-
     address: Address
     ip: str | None = None
     tech_capability_id: int | None = None
@@ -708,9 +700,30 @@ class UpdateSubscriberData(EcstasyModel):
     services: list[str]
 
 
-class CreateCustomerSerializer(EcstasyModel):
-    """Схема `CreateCustomerSerializer` из Ecstasy API."""
+class CommonSubscriberConnectionSerializer(EcstasyModel):
+    id_: int | None = Field(None, alias="id")
+    address: Address
+    ip: str | None = None
+    ont_id: int
+    ont_serial: str | None = None
+    ont_mac: str | None = None
+    order: str | None = None
+    transit: int | None = None
+    connected_at: str | None = None
+    services: list[str]
+    status: str
+    end3_port: int = Field(..., alias="end3Port")
+    customer: CommonCustomerSerializer
 
+
+class PaginatedSubscriberConnectionListResponse(EcstasyModel):
+    count: int
+    next: str | None
+    previous: str | None
+    results: list[CommonSubscriberConnectionSerializer]
+
+
+class CreateCustomerSerializer(EcstasyModel):
     id_: int | None = Field(..., alias="id")
     type_: str = Field(..., alias="type")
     first_name: str | None = Field(None, alias="firstName")
@@ -722,8 +735,6 @@ class CreateCustomerSerializer(EcstasyModel):
 
 
 class SubscriberData(EcstasyModel):
-    """Схема `SubscriberData` из Ecstasy API."""
-
     address: Address
     tech_capability: int | None = None
     customer: CreateCustomerSerializer
@@ -738,9 +749,30 @@ class SubscriberData(EcstasyModel):
     services: list[str]
 
 
-class OLTState(EcstasyModel):
-    """Схема `OLTState` из Ecstasy API."""
+class TechDataCustomerLine(EcstasyModel):
+    type_: str | None = Field(..., alias="type")
+    count: int
+    type_count: int | None = Field(..., alias="typeCount")
 
+
+class TechDataList(EcstasyModel):
+    device_name: str = Field(..., alias="deviceName")
+    device_port: str = Field(..., alias="devicePort")
+    address: BuildingAddress
+    building_type: str | None = None
+    building_id: int
+    entrances: str | None = None
+    customer_line: TechDataCustomerLine | None = Field(None, alias="customerLine")
+
+
+class PaginatedTechDataListResponse(EcstasyModel):
+    count: int
+    next: str | None
+    previous: str | None
+    results: list[TechDataList]
+
+
+class OLTState(EcstasyModel):
     id_: int | None = Field(None, alias="id")
     device_name: str = Field(..., alias="deviceName")
     device_port: str = Field(..., alias="devicePort")
@@ -749,14 +781,15 @@ class OLTState(EcstasyModel):
 
 
 class WriteOnlyHouseBAddress(EcstasyModel):
-    """Схема `WriteOnlyHouseBAddress` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     region: str | None = None
-    settlement: str | None = None
+    settlement: str | None = Field(None, description="Любимовка, Верхнесадовое")
     plan_structure: str | None = Field(None, alias="planStructure")
-    street: str | None = None
-    house: str
+    street: str | None = Field(
+        None,
+        description="Полное название с указанием типа (улица/проспект/проезд/бульвар/шоссе/переулок/тупик)",
+    )
+    house: str = Field(..., description="Можно с буквой (русской)")
     block: int | None = None
     building_type: str
     floors: int
@@ -764,34 +797,26 @@ class WriteOnlyHouseBAddress(EcstasyModel):
 
 
 class CreateHouseOLTState(EcstasyModel):
-    """Схема `CreateHouseOLTState` из Ecstasy API."""
-
     address: WriteOnlyHouseBAddress
     entrances: str | None = None
     description: str | None = None
 
 
 class End3Writer(EcstasyModel):
-    """Схема `End3Writer` из Ecstasy API."""
-
     id_: int = Field(..., alias="id")
     address: Address
-    capacity: int
+    capacity: int = Field(..., description="Кол-во портов/волокон")
     location: str
     type_: str = Field(..., alias="type")
 
 
 class End3Create(EcstasyModel):
-    """Схема `End3Create` из Ecstasy API."""
-
     address: Address | None = None
     build_address: bool = Field(..., alias="buildAddress")
     location: str
 
 
 class End3CreateList(EcstasyModel):
-    """Схема `End3CreateList` из Ecstasy API."""
-
     type_: str = Field(..., alias="type")
     existing_splitter: End3Writer | None = Field(None, alias="existingSplitter")
     port_count: int = Field(..., alias="portCount")
@@ -799,16 +824,12 @@ class End3CreateList(EcstasyModel):
 
 
 class CreateTechData(EcstasyModel):
-    """Схема `CreateTechData` из Ecstasy API."""
-
     olt_state: OLTState = Field(..., alias="oltState")
     house_b: CreateHouseOLTState = Field(..., alias="houseB")
     end3: End3CreateList
 
 
 class HouseOLTState(EcstasyModel):
-    """Схема `HouseOLTState` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     entrances: str | None = None
     description: str | None = None
@@ -817,8 +838,6 @@ class HouseOLTState(EcstasyModel):
 
 
 class ViewHouseBTechData(EcstasyModel):
-    """Схема `ViewHouseBTechData` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     region: str
     settlement: str
@@ -827,24 +846,20 @@ class ViewHouseBTechData(EcstasyModel):
     house: str
     block: str
     building_type: bool
-    floors: int
-    total_entrances: int
-    apartment_building: bool
+    floors: int = Field(..., description="кол-во этажей")
+    total_entrances: int = Field(..., description="Кол-во подъездов")
+    apartment_building: bool = Field(..., description="Многоквартирный дом или частный")
     olt_states: list[HouseOLTState] = Field(..., alias="oltStates")
 
 
 class ShortViewSubscriberConnection(EcstasyModel):
-    """Схема `ShortViewSubscriberConnection` из Ecstasy API."""
-
-    connection_i_d: int = Field(..., alias="connectionID")
+    connection_id: int = Field(..., alias="connectionID")
     customer_name: str = Field(..., alias="customerName")
     transit: int | None = None
-    customer_i_d: int = Field(..., alias="customerID")
+    customer_id: int = Field(..., alias="customerID")
 
 
 class TechCapability(EcstasyModel):
-    """Схема `TechCapability` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     status: str | None = None
     number: int | None = None
@@ -852,26 +867,20 @@ class TechCapability(EcstasyModel):
 
 
 class End3TechCapability(EcstasyModel):
-    """Схема `End3TechCapability` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     address: Address
-    capacity: int
+    capacity: int = Field(..., description="Кол-во портов/волокон")
     location: str
     type_: str | None = Field(None, alias="type")
     capability: list[TechCapability] | None = None
 
 
 class AddEnd3ToHouseOLTState(EcstasyModel):
-    """Схема `AddEnd3ToHouseOLTState` из Ecstasy API."""
-
     end3: End3CreateList
-    house_olt_state_i_d: int = Field(..., alias="houseOltStateID")
+    house_olt_state_id: int = Field(..., alias="houseOltStateID")
 
 
 class StructuresHouseOLTState(EcstasyModel):
-    """Схема `StructuresHouseOLTState` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     address: BuildingAddress
     entrances: str | None = None
@@ -880,16 +889,12 @@ class StructuresHouseOLTState(EcstasyModel):
 
 
 class UpdateHouseOLTState(EcstasyModel):
-    """Схема `UpdateHouseOLTState` из Ecstasy API."""
-
     entrances: str | None = None
     description: str | None = None
     address: WriteOnlyHouseBAddress
 
 
 class UpdateRetrieveOLTState(EcstasyModel):
-    """Схема `UpdateRetrieveOLTState` из Ecstasy API."""
-
     device_name: str = Field(..., alias="deviceName")
     device_port: str = Field(..., alias="devicePort")
     fiber: str | None = None
@@ -897,8 +902,6 @@ class UpdateRetrieveOLTState(EcstasyModel):
 
 
 class ViewOLTStatesTechData(EcstasyModel):
-    """Схема `ViewOLTStatesTechData` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     device_name: str = Field(..., alias="deviceName")
     device_port: str = Field(..., alias="devicePort")
@@ -908,55 +911,80 @@ class ViewOLTStatesTechData(EcstasyModel):
 
 
 class Map(EcstasyModel):
-    """Схема `Map` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     name: str
     description: str | None = None
-    interactive: bool | None = None
-    preview_image: str | None = None
+    interactive: bool | None = Field(
+        None,
+        description="Автоматическое обновление состояния узлов сети из тех слоев, что созданы через группу Zabbix",
+    )
+    preview_image: str | None = Field(None, description="Превью")
     type_: str | None = Field(None, alias="type")
 
 
 class Layer(EcstasyModel):
-    """Схема `Layer` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
-    name: str
+    name: str = Field(..., description="Будет отображаться на карте")
     description: str | None = None
     type_: str | None = Field(None, alias="type")
-    from_file: str | None = None
+    from_file: str | None = Field(None, description="Файл должен быть GEOJSON")
 
 
 class MapDetail(EcstasyModel):
-    """Схема `MapDetail` из Ecstasy API."""
-
     id_: int | None = Field(None, alias="id")
     name: str
     description: str | None = None
-    interactive: bool | None = None
-    preview_image: str | None = None
+    interactive: bool | None = Field(
+        None,
+        description="Автоматическое обновление состояния узлов сети из тех слоев, что созданы через группу Zabbix",
+    )
+    preview_image: str | None = Field(None, description="Превью")
     type_: str | None = Field(None, alias="type")
     from_file: str | None = None
-    map_url: str | None = None
+    map_url: str | None = Field(
+        None,
+        description="URL должен быть абсолютным т.е. содержать обозначение протокола (`http://` или `https://`)",
+    )
 
 
 class MapLayer(EcstasyModel):
-    """Схема `MapLayer` из Ecstasy API."""
-
     groups: list[str]
 
 
-class ShortPointRing(EcstasyModel):
-    """Схема `ShortPointRing` из Ecstasy API."""
+class GeoJSONFeature(EcstasyModel):
+    type_: str = Field(..., alias="type")
+    id_: str = Field(..., alias="id")
+    geometry: dict[str, str | None]
+    properties: dict[str, str | None]
 
+
+class GeoJSONFeatureCollection(EcstasyModel):
+    type_: str | None = Field(None, alias="type")
+    features: list[GeoJSONFeature]
+
+
+class MapLayerRender(EcstasyModel):
+    name: str
+    type_: str = Field(..., alias="type")
+    properties: dict[str, str | None] | None = None
+    features: GeoJSONFeatureCollection
+
+
+class MapProblem(EcstasyModel):
+    id_: str = Field(..., alias="id")
+    acknowledges: list[list[str]]
+
+
+class MapUpdateLayers(EcstasyModel):
+    problems: list[MapProblem]
+
+
+class ShortPointRing(EcstasyModel):
     name: str
     ip: str
 
 
 class AccessRing(EcstasyModel):
-    """Схема `AccessRing` из Ecstasy API."""
-
     head_name: str
     ports: str
     description: str
@@ -965,68 +993,50 @@ class AccessRing(EcstasyModel):
 
 
 class TransportRing(EcstasyModel):
-    """Схема `TransportRing` из Ecstasy API."""
-
-    name: str
+    name: str = Field(..., description="Это название будет отображаться в меню колец")
     description: str
     vlans: list[int]
 
 
 class Comment(EcstasyModel):
-    """Схема `Comment` из Ecstasy API."""
-
     created_time: str = Field(..., alias="createdTime")
     user: str
     text: str
 
 
 class FoundInterface(EcstasyModel):
-    """Схема `FoundInterface` из Ecstasy API."""
-
     name: str
     status: str
     description: str
     vlans: str
-    saved_time: str = Field(..., alias="savedTime")
+    saved_time: str = Field(..., alias="savedTime", description='Формат: "2 года, 6 месяцев назад"')
 
 
 class FoundDeviceInterfaces(EcstasyModel):
-    """Схема `FoundDeviceInterfaces` из Ecstasy API."""
-
     devices: str
     comments: list[Comment]
     interfaces: FoundInterface
 
 
 class SearchInterfaceByDescResult(EcstasyModel):
-    """Схема `SearchInterfaceByDescResult` из Ecstasy API."""
-
     interfaces: list[FoundDeviceInterfaces]
 
 
 class GetVendor(EcstasyModel):
-    """Схема `GetVendor` из Ecstasy API."""
-
     vendor: str
     address: str
 
 
 class GetVlanDesc(EcstasyModel):
-    """Схема `GetVlanDesc` из Ecstasy API."""
-
     name: str
     description: str
 
 
 class NodeFont(EcstasyModel):
-    """Схема `NodeFont` из Ecstasy API."""
-
     color: str
 
 
 class TracerouteNode(EcstasyModel):
-    """Схема `TracerouteNode` из Ecstasy API."""
-
     title: str
     group: int
     hidden: bool | None = None
@@ -1038,26 +1048,24 @@ class TracerouteNode(EcstasyModel):
 
 
 class TracerouteEdge(EcstasyModel):
-    """Схема `TracerouteEdge` из Ecstasy API."""
-
     value: int
     title: str
-    from_: int
+    from_: int = Field(..., description="По факту вернется поле `from`")
     to: int
 
 
 class VlanTraceroute(EcstasyModel):
-    """Схема `VlanTraceroute` из Ecstasy API."""
-
     nodes: list[TracerouteNode]
     edges: list[TracerouteEdge]
-    options: dict[str, str | None]
+    options: dict[str, str | None] = Field(..., description="Параметры для отображения связей и физики")
 
 
 for _model in [
     User,
     UserPermissions,
+    OIDC,
     Devices,
+    GetDeviceByZabbix,
     BulkDeviceCommandExecution,
     BulkDeviceCommandExecutionResult,
     BulkCommandTaskResult,
@@ -1081,8 +1089,11 @@ for _model in [
     ChangeDescriptionRequest,
     ChangeDescription,
     ADSLProfile,
+    CollectConfigResponse,
     DeviceCommands,
     ConfigFile,
+    ZabbixMap,
+    DeviceZabbixInfo,
     DeviceInfo,
     PortDetailInfo,
     InterfaceDetailInfo,
@@ -1104,17 +1115,28 @@ for _model in [
     Nodes,
     Edges,
     MacTraceroute,
+    VlanPort,
+    VlanGatherScanTask,
+    VlanGatherStatus,
+    ShortVlanPort,
+    Vlan,
     BuildingAddress,
     Address,
     End3,
     CommonCustomerSerializer,
     SubscriberHouseOLTState,
-    SubscriberConnection,
+    ViewSubscriberConnectionSerializer,
     CustomerDetail,
+    ErrorDetailResponse,
     OLTSubscriber,
     UpdateSubscriberData,
+    CommonSubscriberConnectionSerializer,
+    PaginatedSubscriberConnectionListResponse,
     CreateCustomerSerializer,
     SubscriberData,
+    TechDataCustomerLine,
+    TechDataList,
+    PaginatedTechDataListResponse,
     OLTState,
     WriteOnlyHouseBAddress,
     CreateHouseOLTState,
@@ -1136,6 +1158,11 @@ for _model in [
     Layer,
     MapDetail,
     MapLayer,
+    GeoJSONFeature,
+    GeoJSONFeatureCollection,
+    MapLayerRender,
+    MapProblem,
+    MapUpdateLayers,
     ShortPointRing,
     AccessRing,
     TransportRing,
@@ -1155,7 +1182,9 @@ for _model in [
 __all__ = [
     "User",
     "UserPermissions",
+    "OIDC",
     "Devices",
+    "GetDeviceByZabbix",
     "BulkDeviceCommandExecution",
     "BulkDeviceCommandExecutionResult",
     "BulkCommandTaskResult",
@@ -1179,8 +1208,11 @@ __all__ = [
     "ChangeDescriptionRequest",
     "ChangeDescription",
     "ADSLProfile",
+    "CollectConfigResponse",
     "DeviceCommands",
     "ConfigFile",
+    "ZabbixMap",
+    "DeviceZabbixInfo",
     "DeviceInfo",
     "PortDetailInfo",
     "InterfaceDetailInfo",
@@ -1202,17 +1234,28 @@ __all__ = [
     "Nodes",
     "Edges",
     "MacTraceroute",
+    "VlanPort",
+    "VlanGatherScanTask",
+    "VlanGatherStatus",
+    "ShortVlanPort",
+    "Vlan",
     "BuildingAddress",
     "Address",
     "End3",
     "CommonCustomerSerializer",
     "SubscriberHouseOLTState",
-    "SubscriberConnection",
+    "ViewSubscriberConnectionSerializer",
     "CustomerDetail",
+    "ErrorDetailResponse",
     "OLTSubscriber",
     "UpdateSubscriberData",
+    "CommonSubscriberConnectionSerializer",
+    "PaginatedSubscriberConnectionListResponse",
     "CreateCustomerSerializer",
     "SubscriberData",
+    "TechDataCustomerLine",
+    "TechDataList",
+    "PaginatedTechDataListResponse",
     "OLTState",
     "WriteOnlyHouseBAddress",
     "CreateHouseOLTState",
@@ -1234,6 +1277,11 @@ __all__ = [
     "Layer",
     "MapDetail",
     "MapLayer",
+    "GeoJSONFeature",
+    "GeoJSONFeatureCollection",
+    "MapLayerRender",
+    "MapProblem",
+    "MapUpdateLayers",
     "ShortPointRing",
     "AccessRing",
     "TransportRing",

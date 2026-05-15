@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 from builtins import list as _list
-from typing import Any
 
 from ecstasy_sdk.models import (
     AddEnd3ToHouseOLTState,
     BuildingAddress,
     CommonCustomerSerializer,
+    CommonSubscriberConnectionSerializer,
     CreateTechData,
     CustomerDetail,
     End3,
     End3TechCapability,
     OLTSubscriber,
     Page,
+    PaginatedSubscriberConnectionListResponse,
+    PaginatedTechDataListResponse,
     StructuresHouseOLTState,
     SubscriberData,
     TechCapability,
@@ -33,31 +35,56 @@ class GponResource:
 
         self._transport = transport
 
-    def list_addresses_buildings(self) -> _list[BuildingAddress]:
-        """Выполняет операцию Ecstasy API.
+    def list_addresses_buildings(
+        self,
+        *,
+        page: int | None = None,
+        page_size: int | None = None,
+        device: str | None = None,
+        port: str | None = None,
+        search: str | None = None,
+    ) -> Page[BuildingAddress]:
+        """
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
+        :param device: (необязательный, query).
+        :param port: (необязательный, query).
+        :param search: (необязательный, query).
 
         operationId: gpon_addresses_buildings_list.
         """
 
         path_params = None
-        query = None
+        query = {"page": page, "page_size": page_size, "device": device, "port": port, "search": search}
         return self._transport.request(
             "GET",
             "/gpon/addresses/buildings",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[BuildingAddress],
+            response_model=Page[BuildingAddress],
         )
 
-    def list_addresses_end3(self) -> _list[End3]:
-        """Выполняет операцию Ecstasy API.
+    def list_addresses_end3(
+        self,
+        *,
+        page: int | None = None,
+        page_size: int | None = None,
+        address_id: int | None = None,
+        search: str | None = None,
+    ) -> _list[End3]:
+        """Возвращает список сплиттеров/райзеров вместе с их адресами
+
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
+        :param address_id: (необязательный, query).
+        :param search: (необязательный, query).
 
         operationId: gpon_addresses_end3_list.
         """
 
         path_params = None
-        query = None
+        query = {"page": page, "page_size": page_size, "address_id": address_id, "search": search}
         return self._transport.request(
             "GET",
             "/gpon/addresses/end3",
@@ -67,25 +94,31 @@ class GponResource:
             response_model=_list[End3],
         )
 
-    def list_customers(self) -> _list[CommonCustomerSerializer]:
-        """Выполняет операцию Ecstasy API.
+    def list_customers(
+        self, *, page: int | None = None, page_size: int | None = None, search: str | None = None
+    ) -> Page[CommonCustomerSerializer]:
+        """
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
+        :param search: (необязательный, query).
 
         operationId: gpon_customers_list.
         """
 
         path_params = None
-        query = None
+        query = {"page": page, "page_size": page_size, "search": search}
         return self._transport.request(
             "GET",
             "/gpon/customers",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[CommonCustomerSerializer],
+            response_model=Page[CommonCustomerSerializer],
         )
 
     def get_customers(self, id_: str) -> CustomerDetail:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_customers_read.
         """
@@ -102,7 +135,9 @@ class GponResource:
         )
 
     def update_customers(self, id_: str, data: CustomerDetail) -> CustomerDetail:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_customers_update.
         """
@@ -119,7 +154,9 @@ class GponResource:
         )
 
     def patch_customers(self, id_: str, data: CustomerDetail) -> CustomerDetail:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_customers_partial_update.
         """
@@ -136,7 +173,8 @@ class GponResource:
         )
 
     def delete_customers(self, id_: str) -> None:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_customers_delete.
         """
@@ -152,32 +190,41 @@ class GponResource:
             response_model=None,
         )
 
-    def list_devices_names(self) -> Any:
-        """Выполняет операцию Ecstasy API.
-
+    def list_devices_names(self) -> _list[str]:
+        """
         operationId: gpon_devices-names_list.
         """
 
         path_params = None
         query = None
         return self._transport.request(
-            "GET", "/gpon/devices-names", path_params=path_params, query=query, body=None, response_model=None
+            "GET",
+            "/gpon/devices-names",
+            path_params=path_params,
+            query=query,
+            body=None,
+            response_model=_list[str],
         )
 
-    def list_permissions(self) -> Any:
-        """Выполняет операцию Ecstasy API.
-
+    def list_permissions(self) -> _list[str]:
+        """
         operationId: gpon_permissions_list.
         """
 
         path_params = None
         query = None
         return self._transport.request(
-            "GET", "/gpon/permissions", path_params=path_params, query=query, body=None, response_model=None
+            "GET",
+            "/gpon/permissions",
+            path_params=path_params,
+            query=query,
+            body=None,
+            response_model=_list[str],
         )
 
-    def get_ports_names(self, device_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def get_ports_names(self, device_name: str) -> _list[str]:
+        """
+        :param device_name: (обязательный, path).
 
         operationId: gpon_ports-names_read.
         """
@@ -190,11 +237,12 @@ class GponResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=_list[str],
         )
 
     def list_statistic_subscribers_count(self, device_name: str) -> _list[OLTSubscriber]:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name: (обязательный, path).
 
         operationId: gpon_statistic_subscribers-count_list.
         """
@@ -211,7 +259,8 @@ class GponResource:
         )
 
     def get_subscriber_connection(self, id_: int) -> UpdateSubscriberData:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this subscriber connection. (обязательный, path).
 
         operationId: gpon_subscriber-connection_read.
         """
@@ -228,7 +277,9 @@ class GponResource:
         )
 
     def update_subscriber_connection(self, id_: int, data: UpdateSubscriberData) -> UpdateSubscriberData:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this subscriber connection. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_subscriber-connection_update.
         """
@@ -245,7 +296,9 @@ class GponResource:
         )
 
     def patch_subscriber_connection(self, id_: int, data: UpdateSubscriberData) -> UpdateSubscriberData:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this subscriber connection. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_subscriber-connection_partial_update.
         """
@@ -262,7 +315,8 @@ class GponResource:
         )
 
     def delete_subscriber_connection(self, id_: int) -> None:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this subscriber connection. (обязательный, path).
 
         operationId: gpon_subscriber-connection_delete.
         """
@@ -278,25 +332,63 @@ class GponResource:
             response_model=None,
         )
 
-    def list_subscriber_data(self) -> _list[SubscriberData]:
-        """Выполняет операцию Ecstasy API.
+    def list_subscriber_data(
+        self,
+        *,
+        general: str | None = None,
+        region: str | None = None,
+        settlement: str | None = None,
+        plan_structure: str | None = None,
+        street: str | None = None,
+        house: str | None = None,
+        block: str | None = None,
+        customer_name: str | None = None,
+        contract: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+    ) -> PaginatedSubscriberConnectionListResponse:
+        """
+        :param general: (необязательный, query).
+        :param region: (необязательный, query).
+        :param settlement: (необязательный, query).
+        :param plan_structure: (необязательный, query).
+        :param street: (необязательный, query).
+        :param house: (необязательный, query).
+        :param block: (необязательный, query).
+        :param customer_name: (необязательный, query).
+        :param contract: (необязательный, query).
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
 
         operationId: gpon_subscriber-data_list.
         """
 
         path_params = None
-        query = None
+        query = {
+            "general": general,
+            "region": region,
+            "settlement": settlement,
+            "planStructure": plan_structure,
+            "street": street,
+            "house": house,
+            "block": block,
+            "customerName": customer_name,
+            "contract": contract,
+            "page": page,
+            "page_size": page_size,
+        }
         return self._transport.request(
             "GET",
             "/gpon/subscriber-data",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[SubscriberData],
+            response_model=PaginatedSubscriberConnectionListResponse,
         )
 
     def create_subscriber_data(self, data: SubscriberData) -> SubscriberData:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_subscriber-data_create.
         """
@@ -312,42 +404,84 @@ class GponResource:
             response_model=SubscriberData,
         )
 
-    def get_subscribers_on_device(self, device_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def get_subscribers_on_device(
+        self, device_name: str, *, port: str | None = None, ont_id: int | None = None
+    ) -> _list[CommonSubscriberConnectionSerializer]:
+        """
+        :param device_name: (обязательный, path).
+        :param port: (обязательный, query).
+        :param ont_id: (необязательный, query).
 
         operationId: gpon_subscribers-on-device_read.
         """
 
         path_params = {"device_name": device_name}
-        query = None
+        query = {"port": port, "ont_id": ont_id}
         return self._transport.request(
             "GET",
             "/gpon/subscribers-on-device/{device_name}",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=_list[CommonSubscriberConnectionSerializer],
         )
 
-    def list_tech_data(self) -> _list[CreateTechData]:
-        """Выполняет операцию Ecstasy API.
+    def list_tech_data(
+        self,
+        *,
+        region: str | None = None,
+        settlement: str | None = None,
+        plan_structure: str | None = None,
+        street: str | None = None,
+        house: str | None = None,
+        block: str | None = None,
+        device_name: str | None = None,
+        device_port: str | None = None,
+        page: int | None = None,
+        page_size: int | None = None,
+    ) -> PaginatedTechDataListResponse:
+        """Предназначен для создания и просмотра технических данных
+
+        :param region: (необязательный, query).
+        :param settlement: (необязательный, query).
+        :param plan_structure: (необязательный, query).
+        :param street: (необязательный, query).
+        :param house: (необязательный, query).
+        :param block: (необязательный, query).
+        :param device_name: (необязательный, query).
+        :param device_port: (необязательный, query).
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
 
         operationId: gpon_tech-data_list.
         """
 
         path_params = None
-        query = None
+        query = {
+            "region": region,
+            "settlement": settlement,
+            "planStructure": plan_structure,
+            "street": street,
+            "house": house,
+            "block": block,
+            "deviceName": device_name,
+            "devicePort": device_port,
+            "page": page,
+            "page_size": page_size,
+        }
         return self._transport.request(
             "GET",
             "/gpon/tech-data",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[CreateTechData],
+            response_model=PaginatedTechDataListResponse,
         )
 
     def create_tech_data(self, data: CreateTechData) -> CreateTechData:
-        """Выполняет операцию Ecstasy API.
+        """Предназначен для создания и просмотра технических данных
+
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_create.
         """
@@ -364,7 +498,8 @@ class GponResource:
         )
 
     def get_tech_data_building(self, id_: str) -> ViewHouseBTechData:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_tech-data_building_read.
         """
@@ -389,7 +524,12 @@ class GponResource:
         street: str | None = None,
         page: int | None = None,
     ) -> Page[End3TechCapability]:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param house: Дом (необязательный, query).
+        :param block: Блок (необязательный, query).
+        :param tech_capability_status: Статус тех. возможности (необязательный, query).
+        :param street: Улица (необязательный, query).
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: gpon_tech-data_end3_list.
         """
@@ -412,7 +552,8 @@ class GponResource:
         )
 
     def create_tech_data_end3(self, data: AddEnd3ToHouseOLTState) -> AddEnd3ToHouseOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_end3_create.
         """
@@ -429,7 +570,8 @@ class GponResource:
         )
 
     def get_tech_data_end3(self, id_: str) -> End3TechCapability:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_tech-data_end3_read.
         """
@@ -446,7 +588,9 @@ class GponResource:
         )
 
     def update_tech_data_end3(self, id_: str, data: End3TechCapability) -> End3TechCapability:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_end3_update.
         """
@@ -463,7 +607,9 @@ class GponResource:
         )
 
     def patch_tech_data_end3(self, id_: str, data: End3TechCapability) -> End3TechCapability:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_end3_partial_update.
         """
@@ -480,7 +626,8 @@ class GponResource:
         )
 
     def delete_tech_data_end3(self, id_: str) -> None:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_tech-data_end3_delete.
         """
@@ -497,7 +644,8 @@ class GponResource:
         )
 
     def get_tech_data_house_olt_state(self, id_: str) -> StructuresHouseOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_tech-data_house-olt-state_read.
         """
@@ -514,7 +662,9 @@ class GponResource:
         )
 
     def update_tech_data_house_olt_state(self, id_: str, data: UpdateHouseOLTState) -> UpdateHouseOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_house-olt-state_update.
         """
@@ -531,7 +681,9 @@ class GponResource:
         )
 
     def patch_tech_data_house_olt_state(self, id_: str, data: UpdateHouseOLTState) -> UpdateHouseOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_house-olt-state_partial_update.
         """
@@ -548,7 +700,8 @@ class GponResource:
         )
 
     def get_tech_data_olt_state(self, id_: str) -> UpdateRetrieveOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_tech-data_olt-state_read.
         """
@@ -565,7 +718,9 @@ class GponResource:
         )
 
     def update_tech_data_olt_state(self, id_: str, data: UpdateRetrieveOLTState) -> UpdateRetrieveOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_olt-state_update.
         """
@@ -582,7 +737,9 @@ class GponResource:
         )
 
     def patch_tech_data_olt_state(self, id_: str, data: UpdateRetrieveOLTState) -> UpdateRetrieveOLTState:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_olt-state_partial_update.
         """
@@ -599,7 +756,8 @@ class GponResource:
         )
 
     def get_tech_data_tech_capability(self, id_: str) -> TechCapability:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
 
         operationId: gpon_tech-data_tech-capability_read.
         """
@@ -616,7 +774,9 @@ class GponResource:
         )
 
     def update_tech_data_tech_capability(self, id_: str, data: TechCapability) -> TechCapability:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_tech-capability_update.
         """
@@ -633,7 +793,9 @@ class GponResource:
         )
 
     def patch_tech_data_tech_capability(self, id_: str, data: TechCapability) -> TechCapability:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: gpon_tech-data_tech-capability_partial_update.
         """
@@ -649,14 +811,16 @@ class GponResource:
             response_model=TechCapability,
         )
 
-    def get_tech_data(self, device_name: str) -> ViewOLTStatesTechData:
-        """Выполняет операцию Ecstasy API.
+    def get_tech_data(self, device_name: str, *, port: str | None = None) -> ViewOLTStatesTechData:
+        """
+        :param device_name: (обязательный, path).
+        :param port: (обязательный, query).
 
         operationId: gpon_tech-data_read.
         """
 
         path_params = {"device_name": device_name}
-        query = None
+        query = {"port": port}
         return self._transport.request(
             "GET",
             "/gpon/tech-data/{device_name}",

@@ -13,6 +13,7 @@ from ecstasy_sdk.models import (
     BulkDeviceCommandExecutionResult,
     ChangeDescription,
     ChangeDescriptionRequest,
+    CollectConfigResponse,
     ConfigFile,
     CutBrasSession,
     DeviceCommands,
@@ -26,6 +27,7 @@ from ecstasy_sdk.models import (
     DeviceViewings,
     DeviceVlan,
     ExecuteBulkDeviceCommandRequest,
+    GetDeviceByZabbix,
     InterfaceDetailInfo,
     InterfacesComments,
     InterfacesList,
@@ -68,7 +70,25 @@ class DevicesResource:
         return_fields: str | None = None,
         page: int | None = None,
     ) -> Page[Devices]:
-        """Выполняет операцию Ecstasy API.
+        """Этот класс представляет собой ListAPIView, который возвращает список всех устройств в базе данных.
+
+        :param group: (необязательный, query).
+        :param vendor: (необязательный, query).
+        :param model: (необязательный, query).
+        :param ip: (необязательный, query).
+        :param serial_number: (необязательный, query).
+        :param os_version: (необязательный, query).
+        :param port_scan_protocol: (необязательный, query).
+        :param cmd_protocol: (необязательный, query).
+        :param active: (необязательный, query).
+        :param collect_interfaces: Collect interfaces (необязательный, query).
+        :param collect_mac_addresses: (необязательный, query).
+        :param collect_vlan_info: (необязательный, query).
+        :param collect_configurations: (необязательный, query).
+        :param connection_pool_size: (необязательный, query).
+        :param name: (необязательный, query).
+        :param return_fields: Список полей для возврата, по умолчанию все (необязательный, query).
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: devices_list.
         """
@@ -98,7 +118,9 @@ class DevicesResource:
         )
 
     def create(self, data: Devices) -> Devices:
-        """Выполняет операцию Ecstasy API.
+        """Этот класс представляет собой ListAPIView, который возвращает список всех устройств в базе данных.
+
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_create.
         """
@@ -129,7 +151,24 @@ class DevicesResource:
         name: str | None = None,
         return_fields: str | None = None,
     ) -> _list[Devices]:
-        """Выполняет операцию Ecstasy API.
+        """Возвращаем список всех устройств, без пагинации
+
+        :param group: (необязательный, query).
+        :param vendor: (необязательный, query).
+        :param model: (необязательный, query).
+        :param ip: (необязательный, query).
+        :param serial_number: (необязательный, query).
+        :param os_version: (необязательный, query).
+        :param port_scan_protocol: (необязательный, query).
+        :param cmd_protocol: (необязательный, query).
+        :param active: (необязательный, query).
+        :param collect_interfaces: Collect interfaces (необязательный, query).
+        :param collect_mac_addresses: (необязательный, query).
+        :param collect_vlan_info: (необязательный, query).
+        :param collect_configurations: (необязательный, query).
+        :param connection_pool_size: (необязательный, query).
+        :param name: (необязательный, query).
+        :param return_fields: Список полей для возврата, по умолчанию все (необязательный, query).
 
         operationId: devices__all_list.
         """
@@ -162,8 +201,12 @@ class DevicesResource:
             response_model=_list[Devices],
         )
 
-    def get_by_zabbix(self, host_id: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def get_by_zabbix(self, host_id: str) -> GetDeviceByZabbix:
+        """Преобразование идентификатора узла сети "host_id" Zabbix в URL ecstasy.
+
+        :param request: Запрос. :param host_id: Идентификатор узла сети в Zabbix.
+
+        :param host_id: (обязательный, path).
 
         operationId: devices_by-zabbix_read.
         """
@@ -176,13 +219,16 @@ class DevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=GetDeviceByZabbix,
         )
 
     def list_commands_history(
         self, *, page: int | None = None, page_size: int | None = None
     ) -> Page[BulkDeviceCommandExecution]:
-        """Выполняет операцию Ecstasy API.
+        """List bulk command executions with nested device results.
+
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
 
         operationId: devices_commands_history_list.
         """
@@ -201,7 +247,11 @@ class DevicesResource:
     def list_commands_history_results(
         self, execution_id: str, *, page: int | None = None, page_size: int | None = None
     ) -> Page[BulkDeviceCommandExecutionResult]:
-        """Выполняет операцию Ecstasy API.
+        """List paginated device results for one execution.
+
+        :param execution_id: (обязательный, path).
+        :param page: A page number within the paginated result set. (необязательный, query).
+        :param page_size: Number of results to return per page. (необязательный, query).
 
         operationId: devices_commands_history_results_list.
         """
@@ -218,7 +268,9 @@ class DevicesResource:
         )
 
     def get_commands_tasks(self, task_id: str) -> BulkCommandTaskStatus:
-        """Выполняет операцию Ecstasy API.
+        """Return current task state, progress and cached results.
+
+        :param task_id: (обязательный, path).
 
         operationId: devices_commands_tasks_read.
         """
@@ -237,7 +289,10 @@ class DevicesResource:
     def create_commands_execute_multiple(
         self, command_id: str, data: ExecuteBulkDeviceCommandRequest
     ) -> BulkCommandLaunchResponse:
-        """Выполняет операцию Ecstasy API.
+        """Validate request and dispatch celery task.
+
+        :param command_id: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_commands_execute-multiple_create.
         """
@@ -254,7 +309,8 @@ class DevicesResource:
         )
 
     def create_comments(self, data: InterfacesComments) -> InterfacesComments:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_comments_create.
         """
@@ -271,7 +327,8 @@ class DevicesResource:
         )
 
     def get_comments(self, id_: int) -> InterfacesComments:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Комментарий к интерфейсу. (обязательный, path).
 
         operationId: devices_comments_read.
         """
@@ -288,7 +345,9 @@ class DevicesResource:
         )
 
     def update_comments(self, id_: int, data: InterfacesComments) -> InterfacesComments:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Комментарий к интерфейсу. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_comments_update.
         """
@@ -305,7 +364,9 @@ class DevicesResource:
         )
 
     def patch_comments(self, id_: int, data: InterfacesComments) -> InterfacesComments:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Комментарий к интерфейсу. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_comments_partial_update.
         """
@@ -322,7 +383,8 @@ class DevicesResource:
         )
 
     def delete_comments(self, id_: int) -> None:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Комментарий к интерфейсу. (обязательный, path).
 
         operationId: devices_comments_delete.
         """
@@ -339,7 +401,11 @@ class DevicesResource:
         )
 
     def create_cut_session(self, data: BrassSession) -> CutBrasSession:
-        """Выполняет операцию Ecstasy API.
+        """## Сбрасываем сессию абонента и перезагружаем порт на оборудовании
+
+        Данные формы: - str:`mac` - max:24 - str:`device` - max:255 - str:`port` - max:50 Сбрасываем сессию и перезагружаем порт на оборудовании Возвращаем: { "portReloadStatus": "RELOAD STATUS", "errors": [] }
+
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_cut-session_create.
         """
@@ -355,8 +421,12 @@ class DevicesResource:
             response_model=CutBrasSession,
         )
 
-    def list_session(self, *, mac: str | None = None) -> BrasPairSessionResult:
-        """Выполняет операцию Ecstasy API.
+    def get_session(self, *, mac: str | None = None) -> BrasPairSessionResult:
+        """## Возвращаем сессию на BRAS для конкретного MAC адреса
+
+        Пример ответа: { "BRAS1": { "session": null, "errors": [ "Не удалось подключиться" ] }, "BRAS2": { "session": " ... ", "errors": [] } }
+
+        :param mac: (обязательный, query).
 
         operationId: devices_session_list.
         """
@@ -372,7 +442,7 @@ class DevicesResource:
             response_model=BrasPairSessionResult,
         )
 
-    def list_workload_interfaces(
+    def get_workload_interfaces_all(
         self,
         *,
         group: str | None = None,
@@ -392,9 +462,25 @@ class DevicesResource:
         name: str | None = None,
         return_fields: str | None = None,
     ) -> DevicesInterfaceWorkloadResult:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param group: (необязательный, query).
+        :param vendor: (необязательный, query).
+        :param model: (необязательный, query).
+        :param ip: (необязательный, query).
+        :param serial_number: (необязательный, query).
+        :param os_version: (необязательный, query).
+        :param port_scan_protocol: (необязательный, query).
+        :param cmd_protocol: (необязательный, query).
+        :param active: (необязательный, query).
+        :param collect_interfaces: Collect interfaces (необязательный, query).
+        :param collect_mac_addresses: (необязательный, query).
+        :param collect_vlan_info: (необязательный, query).
+        :param collect_configurations: (необязательный, query).
+        :param connection_pool_size: (необязательный, query).
+        :param name: (необязательный, query).
+        :param return_fields: Список полей для возврата, по умолчанию все (необязательный, query).
 
-        operationId: devices_workload_interfaces_list.
+        operationId: devices_workload_interfaces__all_list.
         """
 
         path_params = None
@@ -418,7 +504,7 @@ class DevicesResource:
         }
         return self._transport.request(
             "GET",
-            "/devices/workload/interfaces",
+            "/devices/workload/interfaces/_all",
             path_params=path_params,
             query=query,
             body=None,
@@ -426,7 +512,8 @@ class DevicesResource:
         )
 
     def get_workload_interfaces(self, device_name_or_ip: str) -> InterfaceWorkload:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_workload_interfaces_read.
         """
@@ -443,7 +530,8 @@ class DevicesResource:
         )
 
     def get(self, device_name_or_ip: str) -> DevicesDetail:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_read.
         """
@@ -460,7 +548,9 @@ class DevicesResource:
         )
 
     def update(self, device_name_or_ip: str, data: DevicesDetailUpdate) -> DevicesDetailUpdate:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_update.
         """
@@ -477,7 +567,9 @@ class DevicesResource:
         )
 
     def patch(self, device_name_or_ip: str, data: DevicesDetailUpdate) -> DevicesDetailUpdate:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_partial_update.
         """
@@ -494,7 +586,8 @@ class DevicesResource:
         )
 
     def delete(self, device_name_or_ip: str) -> None:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_delete.
         """
@@ -510,44 +603,56 @@ class DevicesResource:
             response_model=None,
         )
 
-    def list_actions(self, device_name_or_ip: str) -> _list[UserDeviceAction]:
-        """Выполняет операцию Ecstasy API.
+    def list_actions(self, device_name_or_ip: str, *, page: int | None = None) -> Page[UserDeviceAction]:
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: devices_actions_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
-        query = None
+        query = {"page": page}
         return self._transport.request(
             "GET",
             "/devices/{device_name_or_ip}/actions",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[UserDeviceAction],
+            response_model=Page[UserDeviceAction],
         )
 
-    def list_cable_diag(self, device_name_or_ip: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def list_cable_diag(self, device_name_or_ip: str, *, port: str | None = None) -> _list[dict[str, Any]]:
+        """## Запускаем диагностику кабеля на порту
+
+        Для этого необходимо передать порт в параметре URL `?port=eth1` Функция возвращает данные в виде словаря. В зависимости от результата диагностики некоторые ключи могут отсутствовать за ненадобностью. { "len": "-", # Длина кабеля в метрах, либо "-", когда не определено "status": "", # Состояние на порту (Up, Down, Empty) "pair1": { "status": "", # Статус первой пары (Open, Short) "len": "", # Длина первой пары в метрах }, "pair2": { "status": "", # Статус второй пары (Open, Short) "len": "", # Длина второй пары в метрах } }
+
+        :param device_name_or_ip: (обязательный, path).
+        :param port: Порт (интерфейс) оборудования (обязательный, query).
 
         operationId: devices_cable-diag_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
-        query = None
+        query = {"port": port}
         return self._transport.request(
             "GET",
             "/devices/{device_name_or_ip}/cable-diag",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=_list[dict[str, Any]],
         )
 
     def create_change_description(
         self, device_name_or_ip: str, data: ChangeDescriptionRequest
     ) -> ChangeDescription:
-        """Выполняет операцию Ecstasy API.
+        """## Меняем описание на порту оборудования
+
+        Требуется передать JSON: { "port": "порт оборудования", "description": "новое описание порта" } Если указанного порта не существует на оборудовании, то будет отправлен ответ со статусом `400` { "detail": "Неверный порт {port}" } Если описание слишком длинное, то будет отправлен ответ со статусом `400` { "detail": "Слишком длинное описание! Укажите не более {max_length} символов." }
+
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_change-description_create.
         """
@@ -564,7 +669,12 @@ class DevicesResource:
         )
 
     def create_change_dsl_profile(self, device_name_or_ip: str, data: ADSLProfile) -> dict[str, Any]:
-        """Выполняет операцию Ecstasy API.
+        """Изменяем профиль xDSL порта на другой
+
+        Возвращаем `{ "status": status }` или `{ "error": error }`
+
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_change-dsl-profile_create.
         """
@@ -580,8 +690,12 @@ class DevicesResource:
             response_model=dict[str, Any],
         )
 
-    def create_collect_config(self, device_name_or_ip: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def create_collect_config(self, device_name_or_ip: str) -> CollectConfigResponse:
+        """## В реальном времени смотрим и сохраняем конфигурацию оборудования
+
+        Если такая конфигурация уже имеется, то файл не будет создан (чтобы не было лишних копий)
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_collect-config_create.
         """
@@ -594,11 +708,13 @@ class DevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=CollectConfigResponse,
         )
 
     def list_commands(self, device_name_or_ip: str) -> _list[DeviceCommands]:
-        """Выполняет операцию Ecstasy API.
+        """Return available commands for the selected device.
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_commands_list.
         """
@@ -614,8 +730,14 @@ class DevicesResource:
             response_model=_list[DeviceCommands],
         )
 
-    def create_commands_execute(self, device_name_or_ip: str, command_id: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def create_commands_execute(
+        self, device_name_or_ip: str, command_id: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Execute a command on a single device.
+
+        :param device_name_or_ip: (обязательный, path).
+        :param command_id: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_commands_execute_create.
         """
@@ -627,12 +749,18 @@ class DevicesResource:
             "/devices/{device_name_or_ip}/commands/{command_id}/execute",
             path_params=path_params,
             query=query,
-            body=None,
-            response_model=None,
+            body=data,
+            response_model=dict[str, Any],
         )
 
-    def create_commands_validate(self, device_name_or_ip: str, command_id: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def create_commands_validate(
+        self, device_name_or_ip: str, command_id: str, data: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Validate a command for a single device.
+
+        :param device_name_or_ip: (обязательный, path).
+        :param command_id: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_commands_validate_create.
         """
@@ -644,12 +772,15 @@ class DevicesResource:
             "/devices/{device_name_or_ip}/commands/{command_id}/validate",
             path_params=path_params,
             query=query,
-            body=None,
-            response_model=None,
+            body=data,
+            response_model=dict[str, Any],
         )
 
-    def get_config(self, device_name_or_ip: str, file_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def get_config(self, device_name_or_ip: str, file_name: str) -> dict[str, Any]:
+        """## Отправляет содержимое файла конфигурации
+
+        :param device_name_or_ip: (обязательный, path).
+        :param file_name: (обязательный, path).
 
         operationId: devices_config_read.
         """
@@ -662,11 +793,14 @@ class DevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=dict[str, Any],
         )
 
     def delete_config(self, device_name_or_ip: str, file_name: str) -> None:
-        """Выполняет операцию Ecstasy API.
+        """## Удаляет файл конфигурации
+
+        :param device_name_or_ip: (обязательный, path).
+        :param file_name: (обязательный, path).
 
         operationId: devices_config_delete.
         """
@@ -683,7 +817,11 @@ class DevicesResource:
         )
 
     def list_configs(self, device_name_or_ip: str) -> _list[ConfigFile]:
-        """Выполняет операцию Ecstasy API.
+        """## Перечень файлов конфигураций указанного оборудования
+
+        Пример ответа: [ { "name": "config_file_96f7d499c739875.txt", "size": 19346, "modTime": "11:53 28.03.2023", } ]
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_configs_list.
         """
@@ -699,14 +837,19 @@ class DevicesResource:
             response_model=_list[ConfigFile],
         )
 
-    def list_info(self, device_name_or_ip: str) -> DeviceInfo:
-        """Выполняет операцию Ecstasy API.
+    def get_info(self, device_name_or_ip: str, *, page: int | None = None) -> DeviceInfo:
+        """Возвращаем общую информацию оборудования
+
+        Пример вывода: { "deviceName": "DEVICE-NAME", "deviceIP": "10.10.10.10", "elasticStackLink": "URL", "zabbixHostID": "45632", "zabbixInfo": { "description": "ОПИСАНИЕ ОБОРУДОВАНИЯ В ZABBIX", "inventory": { "type": "Eltex", "type_full": "MES3324F 28-port 1G/10G Managed Switch", "serialno_a": "", "macaddress_a": "", "hardware": "MES3324F 28-port 1G/10G Managed Switch", ... "model": "MES3324F", "vendor": "Eltex" } }, "permission": 3, "coords": [ 23.322332, 32.233223 ], "consoleURL": "", "uptime": 23434, }
+
+        :param device_name_or_ip: (обязательный, path).
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: devices_info_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
-        query = None
+        query = {"page": page}
         return self._transport.request(
             "GET",
             "/devices/{device_name_or_ip}/info",
@@ -716,8 +859,12 @@ class DevicesResource:
             response_model=DeviceInfo,
         )
 
-    def list_interface_info(self, device_name_or_ip: str) -> InterfaceDetailInfo:
-        """Выполняет операцию Ecstasy API.
+    def get_interface_info(self, device_name_or_ip: str) -> InterfaceDetailInfo:
+        """## Общая информация об определенном порте оборудования
+
+        В зависимости от типа оборудования информация будет совершенно разной Поле `portDetailInfo.type` указывает тип данных, которые могут быть Строкой или Объектом. Возможные значения: "text", "html", "error", "adsl", "gpon", "eltex-gpon", "mikrotik". { "portDetailInfo": { "type": "text", - Тип данных для детальной информации о порте "data": "" - Сами данные }, "portConfig": "Конфигурация порта (из файла конфигурации)", "portType": "COPPER" - (SFP, COMBO), "portErrors": "Ошибки на порту", "hasCableDiag": true - Имеется ли на данном типе оборудования возможность диагностики порта }
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_interface-info_list.
         """
@@ -733,7 +880,7 @@ class DevicesResource:
             response_model=InterfaceDetailInfo,
         )
 
-    def list_interfaces(
+    def get_interfaces(
         self,
         device_name_or_ip: str,
         *,
@@ -743,7 +890,16 @@ class DevicesResource:
         add_comments: bool | None = None,
         add_zabbix_graph: bool | None = None,
     ) -> InterfacesList:
-        """Выполняет операцию Ecstasy API.
+        """Вывод интерфейсов оборудования
+
+        Пример вывода: { "interfaces": [ { "name": "gi1/0/1", "status": "up", "description": "To_DEVICE-1", "link": { "deviceName": "DEVICE-1", "url": "/device/DEVICE-1" }, "comments": [ { "text": "Какой-то комментарий", "user": "irudenko", "id": 14 } ], "vlans": [], }, ... { "name": "te1/0/4", "status": "down", "description": "" } ], "deviceAvailable": true, "collected": "2023-03-01T15:13:11.559175" }
+
+        :param device_name_or_ip: (обязательный, path).
+        :param current_status: (необязательный, query).
+        :param vlans: (необязательный, query).
+        :param add_links: (необязательный, query).
+        :param add_comments: (необязательный, query).
+        :param add_zabbix_graph: (необязательный, query).
 
         operationId: devices_interfaces_list.
         """
@@ -765,8 +921,13 @@ class DevicesResource:
             response_model=InterfacesList,
         )
 
-    def list_macs(self, device_name_or_ip: str, *, port: str | None = None) -> MacListResult:
-        """Выполняет операцию Ecstasy API.
+    def get_macs(self, device_name_or_ip: str, *, port: str | None = None) -> MacListResult:
+        """## Смотрим MAC-адреса на порту оборудования
+
+        Для этого необходимо передать порт в параметре URL `?port=eth1` Если порт верный и там есть MAC-адреса, то будет вот такой ответ: { "count": 47, "result": [ { "vlanID": "1051", "mac": "00-04-96-51-AD-3D", "vlanName": "Описание VLAN" }, ... ] }
+
+        :param device_name_or_ip: (обязательный, path).
+        :param port: Порт (интерфейс) оборудования (обязательный, query).
 
         operationId: devices_macs_list.
         """
@@ -782,25 +943,29 @@ class DevicesResource:
             response_model=MacListResult,
         )
 
-    def list_media(self, device_name_or_ip: str) -> _list[DeviceMedia]:
-        """Выполняет операцию Ecstasy API.
+    def list_media(self, device_name_or_ip: str, *, page: int | None = None) -> Page[DeviceMedia]:
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: devices_media_list.
         """
 
         path_params = {"device_name_or_ip": device_name_or_ip}
-        query = None
+        query = {"page": page}
         return self._transport.request(
             "GET",
             "/devices/{device_name_or_ip}/media",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[DeviceMedia],
+            response_model=Page[DeviceMedia],
         )
 
     def create_media(self, device_name_or_ip: str, data: DeviceMedia) -> DeviceMedia:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_media_create.
         """
@@ -817,7 +982,9 @@ class DevicesResource:
         )
 
     def get_media(self, device_name_or_ip: str, id_: int) -> DeviceMedia:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param id_: A unique integer value identifying this Медиафайл. (обязательный, path).
 
         operationId: devices_media_read.
         """
@@ -834,7 +1001,10 @@ class DevicesResource:
         )
 
     def update_media(self, device_name_or_ip: str, id_: int, data: DeviceMedia) -> DeviceMedia:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param id_: A unique integer value identifying this Медиафайл. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_media_update.
         """
@@ -851,7 +1021,10 @@ class DevicesResource:
         )
 
     def patch_media(self, device_name_or_ip: str, id_: int, data: DeviceMedia) -> DeviceMedia:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param id_: A unique integer value identifying this Медиафайл. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_media_partial_update.
         """
@@ -868,7 +1041,9 @@ class DevicesResource:
         )
 
     def delete_media(self, device_name_or_ip: str, id_: int) -> None:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
+        :param id_: A unique integer value identifying this Медиафайл. (обязательный, path).
 
         operationId: devices_media_delete.
         """
@@ -884,8 +1059,10 @@ class DevicesResource:
             response_model=None,
         )
 
-    def list_pool(self, device_name_or_ip: str) -> DevicePoolStatuses:
-        """Выполняет операцию Ecstasy API.
+    def get_pool(self, device_name_or_ip: str) -> DevicePoolStatuses:
+        """Возвращает максимальное кол-во сессий в пуле подключений и список статусов работоспособности текущих пулов.
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_pool_list.
         """
@@ -902,7 +1079,9 @@ class DevicesResource:
         )
 
     def delete_pool(self, device_name_or_ip: str) -> None:
-        """Выполняет операцию Ecstasy API.
+        """Очищает пул всех текущих подключений
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_pool_delete.
         """
@@ -919,7 +1098,10 @@ class DevicesResource:
         )
 
     def create_port_status(self, device_name_or_ip: str, data: PortControl) -> PortControl:
-        """Выполняет операцию Ecstasy API.
+        """## Изменяем состояние порта оборудования
+
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_port-status_create.
         """
@@ -936,7 +1118,10 @@ class DevicesResource:
         )
 
     def create_set_poe_out(self, device_name_or_ip: str, data: PoEPortStatus) -> PoEPortStatus:
-        """Выполняет операцию Ecstasy API.
+        """Устанавливает PoE статус на порту
+
+        :param device_name_or_ip: (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: devices_set-poe-out_create.
         """
@@ -952,8 +1137,12 @@ class DevicesResource:
             response_model=PoEPortStatus,
         )
 
-    def list_stats(self, device_name_or_ip: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def list_stats(self, device_name_or_ip: str) -> _list[dict[str, Any]]:
+        """Возвращаем данные CPU, FLASH, RAM, TEMP
+
+        Пример вывода: { "cpu": { "util": [ 2 ] }, "ram": { "util": 15 }, "flash": { "util": 50 }, "temp": { "value": 43.5, "status": "normal" } }
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_stats_list.
         """
@@ -966,11 +1155,12 @@ class DevicesResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=_list[dict[str, Any]],
         )
 
     def list_viewings(self, device_name_or_ip: str) -> _list[DeviceViewings]:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_viewings_list.
         """
@@ -986,8 +1176,9 @@ class DevicesResource:
             response_model=_list[DeviceViewings],
         )
 
-    def create_viewings(self, device_name_or_ip: str, data: DeviceViewings) -> Any:
-        """Выполняет операцию Ecstasy API.
+    def create_viewings(self, device_name_or_ip: str) -> Any:
+        """
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_viewings_create.
         """
@@ -999,12 +1190,14 @@ class DevicesResource:
             "/devices/{device_name_or_ip}/viewings",
             path_params=path_params,
             query=query,
-            body=data,
+            body=None,
             response_model=None,
         )
 
     def list_vlan_info(self, device_name_or_ip: str) -> _list[DeviceVlan]:
-        """Выполняет операцию Ecstasy API.
+        """Возвращаем информацию о VLAN-ах
+
+        :param device_name_or_ip: (обязательный, path).
 
         operationId: devices_vlan-info_list.
         """

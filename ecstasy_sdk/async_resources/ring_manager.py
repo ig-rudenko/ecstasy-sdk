@@ -19,7 +19,9 @@ class AsyncRingManagerResource:
         self._transport = transport
 
     async def get_access_ring(self, head_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+        """Эта функция извлекает объект транспортного кольца, нормализует его, собирает все интерфейсы из его истории, находит связь между устройствами и возвращает сериализованный ответ данных устройств кольца.
+
+        :param head_name: (обязательный, path).
 
         operationId: ring-manager_access-ring_read.
         """
@@ -36,8 +38,7 @@ class AsyncRingManagerResource:
         )
 
     async def list_access_rings(self) -> _list[AccessRing]:
-        """Выполняет операцию Ecstasy API.
-
+        """
         operationId: ring-manager_access-rings_list.
         """
 
@@ -53,7 +54,9 @@ class AsyncRingManagerResource:
         )
 
     async def get_transport_ring(self, ring_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+        """Эта функция извлекает объект транспортного кольца, нормализует его, собирает все интерфейсы из его истории, находит связь между устройствами и возвращает сериализованный ответ данных устройств кольца.
+
+        :param ring_name: (обязательный, path).
 
         operationId: ring-manager_transport-ring_read.
         """
@@ -69,8 +72,10 @@ class AsyncRingManagerResource:
             response_model=None,
         )
 
-    async def list_transport_ring_solutions(self, ring_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    async def get_transport_ring_solutions(self, ring_name: str) -> Any:
+        """Эта функция извлекает информацию о транспортном кольце, проверяет доступность устройств, собирает интерфейсы, находит связи между устройствами и возвращает points и решения `solutions`, которые можно будет применить, чтобы перевести кольцо в оптимальное состояние.
+
+        :param ring_name: (обязательный, path).
 
         operationId: ring-manager_transport-ring_solutions_list.
         """
@@ -87,7 +92,9 @@ class AsyncRingManagerResource:
         )
 
     async def create_transport_ring_solutions(self, ring_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+        """Эта функция выполняет набор действий над объектом транспортного кольца и возвращает выполненные действия, а также их статус
+
+        :param ring_name: (обязательный, path).
 
         operationId: ring-manager_transport-ring_solutions_create.
         """
@@ -103,8 +110,9 @@ class AsyncRingManagerResource:
             response_model=None,
         )
 
-    async def list_transport_ring_solutions_last(self, ring_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    async def get_transport_ring_solutions_last(self, ring_name: str) -> Any:
+        """
+        :param ring_name: (обязательный, path).
 
         operationId: ring-manager_transport-ring_solutions_last_list.
         """
@@ -120,8 +128,10 @@ class AsyncRingManagerResource:
             response_model=None,
         )
 
-    async def list_transport_ring_status(self, ring_name: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    async def get_transport_ring_status(self, ring_name: str) -> Any:
+        """Эта функция извлекает состояние транспортного кольца и возвращает информацию о том, активно ли оно и разворачивается ли в данный момент.
+
+        :param ring_name: (обязательный, path).
 
         operationId: ring-manager_transport-ring_status_list.
         """
@@ -138,7 +148,7 @@ class AsyncRingManagerResource:
         )
 
     async def list_transport_rings(self) -> _list[TransportRing]:
-        """Выполняет операцию Ecstasy API.
+        """Это класс, который возвращает набор запросов объектов TransportRing, отфильтрованных текущим пользователем и упорядоченных по имени.
 
         operationId: ring-manager_transport-rings_list.
         """

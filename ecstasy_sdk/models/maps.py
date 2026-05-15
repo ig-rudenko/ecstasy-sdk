@@ -5,11 +5,15 @@ from ecstasy_sdk.models.schemas import (
     Map,
     MapDetail,
     MapLayer,
+    MapLayerRender,
+    MapUpdateLayers,
 )
 
 __all__ = [
-    "Map",
     "Layer",
+    "Map",
     "MapDetail",
     "MapLayer",
+    "MapLayerRender",
+    "MapUpdateLayers",
 ]

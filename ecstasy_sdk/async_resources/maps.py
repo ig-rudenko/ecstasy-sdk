@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from builtins import list as _list
-from typing import Any
-
 from ecstasy_sdk.models import (
     Layer,
     Map,
     MapDetail,
     MapLayer,
+    MapLayerRender,
+    MapUpdateLayers,
     Page,
 )
 from ecstasy_sdk.transport.async_ import AsyncTransport
@@ -22,7 +21,8 @@ class AsyncMapsResource:
         self._transport = transport
 
     async def list(self, *, page: int | None = None) -> Page[Map]:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: maps_list.
         """
@@ -33,25 +33,32 @@ class AsyncMapsResource:
             "GET", "/maps/", path_params=path_params, query=query, body=None, response_model=Page[Map]
         )
 
-    async def list_layers(self, *, id_: str | None = None, name: str | None = None) -> _list[Layer]:
-        """Выполняет операцию Ecstasy API.
+    async def list_layers(
+        self, *, id_: str | None = None, name: str | None = None, page: int | None = None
+    ) -> Page[Layer]:
+        """
+        :param id_: (необязательный, query).
+        :param name: (необязательный, query).
+        :param page: A page number within the paginated result set. (необязательный, query).
 
         operationId: maps_layers_list.
         """
 
         path_params = None
-        query = {"id": id_, "name": name}
+        query = {"id": id_, "name": name, "page": page}
         return await self._transport.request(
             "GET",
             "/maps/layers/",
             path_params=path_params,
             query=query,
             body=None,
-            response_model=_list[Layer],
+            response_model=Page[Layer],
         )
 
     async def update_layers(self, id_: int, data: Layer) -> Layer:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Слой. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: maps_layers_update.
         """
@@ -63,7 +70,9 @@ class AsyncMapsResource:
         )
 
     async def patch_layers(self, id_: int, data: Layer) -> Layer:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Слой. (обязательный, path).
+        :param data: Тело запроса. (обязательный, body).
 
         operationId: maps_layers_partial_update.
         """
@@ -80,7 +89,8 @@ class AsyncMapsResource:
         )
 
     async def get(self, id_: int) -> MapDetail:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param id_: A unique integer value identifying this Карту. (обязательный, path).
 
         operationId: maps_read.
         """
@@ -92,7 +102,8 @@ class AsyncMapsResource:
         )
 
     async def get_layers(self, map_id: str) -> MapLayer:
-        """Выполняет операцию Ecstasy API.
+        """
+        :param map_id: (обязательный, path).
 
         operationId: maps_layers_read.
         """
@@ -108,8 +119,10 @@ class AsyncMapsResource:
             response_model=MapLayer,
         )
 
-    async def get_render(self, map_id: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    async def get_render(self, map_id: str) -> MapLayerRender:
+        """Эта функция извлекает данные из слоев объекта карты и возвращает их в формате списка.
+
+        :param map_id: (обязательный, path).
 
         operationId: maps_render_read.
         """
@@ -122,11 +135,15 @@ class AsyncMapsResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=MapLayerRender,
         )
 
-    async def get_update(self, map_id: str) -> Any:
-        """Выполняет операцию Ecstasy API.
+    async def get_update(self, map_id: str) -> MapUpdateLayers:
+        """# Проверяем какие из узлов сети недоступны на интерактивной карте с заданным идентификатором
+
+        Возвращаем JSON ответ с проблемными узлами сети и подтверждение проблем (если они есть в Zabbix): { "problems": [ {"id": "host_id", "acknowledges": [["text", "datetime"], ... ]}, {"id": "host_id", "acknowledges": [["text", "datetime"], ... ]}, ... ] }
+
+        :param map_id: (обязательный, path).
 
         operationId: maps_update_read.
         """
@@ -139,5 +156,5 @@ class AsyncMapsResource:
             path_params=path_params,
             query=query,
             body=None,
-            response_model=None,
+            response_model=MapUpdateLayers,
         )

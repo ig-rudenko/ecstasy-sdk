@@ -10,8 +10,9 @@ from textwrap import dedent
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = json.loads((ROOT / "docs" / "swagger.json").read_text(encoding="utf-8"))
-DEFINITIONS = SPEC.get("definitions", {})
+DEFINITIONS = SPEC.get("definitions") or SPEC.get("components", {}).get("schemas", {})
 PATHS = SPEC.get("paths", {})
+HTTP_METHODS = {"get", "post", "put", "patch", "delete", "options", "head"}
 
 RESERVED = set(keyword.kwlist) | {
     "from",
@@ -159,9 +160,10 @@ def snake(value: str) -> str:
     """Преобразует строку в snake_case."""
 
     value = value.replace("-", "_").replace("/", "_")
-    value = re.sub(r"(?<!^)(?=[A-Z])", "_", value).lower()
+    value = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", value)
+    value = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", value)
     value = re.sub(r"[^0-9a-zA-Z_]+", "_", value)
-    value = re.sub(r"_+", "_", value).strip("_")
+    value = re.sub(r"_+", "_", value).strip("_").lower()
     if not value:
         value = "value"
     if value[0].isdigit():
@@ -190,7 +192,102 @@ def method_name(name: str) -> str:
 def class_name(name: str) -> str:
     """Возвращает безопасное имя класса."""
 
-    return re.sub(r"[^0-9a-zA-Z_]", "", name)
+    result = re.sub(r"[^0-9a-zA-Z_]", "", name)
+    result = re.sub(r"SwaggerSchema$", "", result)
+    result = re.sub(r"Swagger$", "", result)
+    if not result:
+        return "GeneratedModel"
+    if result[0].isdigit():
+        result = f"Model{result}"
+    return result
+
+
+def ref_name(ref: str) -> str:
+    """Возвращает имя схемы из JSON Reference."""
+
+    return class_name(ref.rsplit("/", 1)[-1])
+
+
+def doc_text(value: object, fallback: str = "") -> str:
+    """Возвращает однострочный текст для русскоязычной документации."""
+
+    if not isinstance(value, str) or not value.strip():
+        return fallback
+    return re.sub(r"\s+", " ", value.strip())
+
+
+def schema_docstring(name: str, schema: dict) -> str:
+    """Возвращает docstring для Pydantic-схемы."""
+
+    description = doc_text(schema.get("description"), fallback="")
+    return description.replace('"""', '\\"\\"\\"')
+
+
+def field_args(default: str, schema: dict, alias: str | None = None) -> str:
+    """Строит аргументы Field для описанного поля модели."""
+
+    args = [default]
+    if alias is not None:
+        args.append(f"alias={alias!r}")
+    description = schema.get("description")
+    if isinstance(description, str) and description.strip():
+        args.append(f"description={doc_text(description)!r}")
+    return ", ".join(args)
+
+
+def collect_schema_refs(schema: dict | list | None) -> set[str]:
+    """Собирает ссылки на модели из схемы OpenAPI."""
+
+    refs: set[str] = set()
+    if isinstance(schema, list):
+        for item in schema:
+            refs.update(collect_schema_refs(item))
+        return refs
+    if not isinstance(schema, dict):
+        return refs
+    ref = schema.get("$ref")
+    if isinstance(ref, str):
+        refs.add(ref_name(ref))
+    for value in schema.values():
+        if isinstance(value, dict | list):
+            refs.update(collect_schema_refs(value))
+    return refs
+
+
+def operation_schemas(operation: dict) -> list[dict]:
+    """Возвращает схемы запроса и ответа операции."""
+
+    schemas: list[dict] = []
+    for param in operation.get("parameters", []):
+        if param.get("schema"):
+            schemas.append(param["schema"])
+    request_body = operation.get("requestBody") or {}
+    if request_body.get("content"):
+        for media_type in request_body["content"].values():
+            if media_type.get("schema"):
+                schemas.append(media_type["schema"])
+    for response in (operation.get("responses") or {}).values():
+        if response.get("schema"):
+            schemas.append(response["schema"])
+        for media_type in (response.get("content") or {}).values():
+            if media_type.get("schema"):
+                schemas.append(media_type["schema"])
+    return schemas
+
+
+def content_schema(node: dict) -> dict | None:
+    """Возвращает schema из Swagger 2.0 или OpenAPI 3 content."""
+
+    if node.get("schema"):
+        return node["schema"]
+    content = node.get("content") or {}
+    for media_type in ["application/json", "application/*+json"]:
+        if content.get(media_type, {}).get("schema"):
+            return content[media_type]["schema"]
+    for media_type in content.values():
+        if media_type.get("schema"):
+            return media_type["schema"]
+    return None
 
 
 def schema_type(schema: dict, *, required: bool = True) -> str:
@@ -199,9 +296,11 @@ def schema_type(schema: dict, *, required: bool = True) -> str:
     if not schema:
         typ = "Any"
     elif "$ref" in schema:
-        typ = class_name(schema["$ref"].split("/")[-1])
+        typ = ref_name(schema["$ref"])
     else:
         stype = schema.get("type")
+        if not stype and "enum" in schema:
+            stype = "string"
         if stype == "array":
             typ = f"list[{schema_type(schema.get('items', {}), required=True)}]"
         elif stype == "integer":
@@ -224,9 +323,18 @@ def schema_type(schema: dict, *, required: bool = True) -> str:
                 typ = f"dict[str, {schema_type(schema.get('additionalProperties') or {}, required=True)}]"
             else:
                 typ = "dict[str, Any]"
+        elif "allOf" in schema:
+            parts = [schema_type(item, required=True) for item in schema["allOf"]]
+            typ = next((item for item in parts if item != "Any"), "Any")
+        elif "oneOf" in schema or "anyOf" in schema:
+            variants = [
+                schema_type(item, required=True) for item in schema.get("oneOf") or schema.get("anyOf") or []
+            ]
+            unique_variants = list(dict.fromkeys(variants))
+            typ = " | ".join(unique_variants) if unique_variants else "Any"
         else:
             typ = "Any"
-    if (not required or schema.get("x-nullable")) and " | None" not in typ:
+    if (not required or schema.get("x-nullable")) and not typ.endswith(" | None"):
         typ = f"{typ} | None"
     return typ
 
@@ -237,6 +345,18 @@ def resource_type_expr(type_expr: str) -> str:
     return type_expr.replace("list[", "_list[")
 
 
+def type_names(type_expr: str, model_names: set[str]) -> set[str]:
+    """Возвращает имена моделей, реально встречающиеся в type expression."""
+
+    return set(re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", type_expr)) & model_names
+
+
+def import_sort_key(name: str) -> tuple[int, str]:
+    """Возвращает ключ сортировки импортов, совместимый с ruff/isort."""
+
+    return (0 if name.isupper() else 1, name.lower())
+
+
 def response_type(operation: dict) -> tuple[str, str]:
     """Возвращает type hint и response_model для операции."""
 
@@ -245,9 +365,9 @@ def response_type(operation: dict) -> tuple[str, str]:
         response = responses.get(code)
         if response is None:
             continue
-        schema = response.get("schema")
         if code == "204":
             return "None", "None"
+        schema = content_schema(response)
         if not schema:
             return "Any", "None"
         typ = resource_type_expr(schema_type(schema))
@@ -263,13 +383,19 @@ def body_param(operation: dict) -> tuple[str | None, str, bool]:
             name = py_name(param.get("name") or "data")
             typ = schema_type(param.get("schema") or {})
             return name, typ, bool(param.get("required"))
+    request_body = operation.get("requestBody") or {}
+    schema = content_schema(request_body)
+    if schema:
+        return "data", schema_type(schema), bool(request_body.get("required"))
     return None, "None", False
 
 
 def param_type(param: dict) -> str:
     """Возвращает type hint параметра."""
 
-    schema = {"type": param.get("type", "string")}
+    schema = dict(param.get("schema") or {"type": param.get("type", "string")})
+    if param.get("items") and "items" not in schema:
+        schema["items"] = param["items"]
     if param.get("x-nullable"):
         schema["x-nullable"] = True
     return schema_type(schema, required=bool(param.get("required")))
@@ -309,10 +435,109 @@ def operation_method_name(tag: str, operation_id: str, used: set[str]) -> str:
     return name
 
 
+def get_response_schema(operation: dict) -> dict | None:
+    """Возвращает основную успешную схему ответа операции."""
+
+    for code in ["200", "201", "202"]:
+        response = (operation.get("responses") or {}).get(code)
+        if response is not None:
+            return content_schema(response)
+    return None
+
+
+def is_collection_get(path: str, operation: dict) -> bool:
+    """Определяет, возвращает ли GET-операция коллекцию объектов."""
+
+    schema = get_response_schema(operation)
+    if not schema:
+        return False
+    if schema.get("type") == "array":
+        return True
+    if "$ref" in schema:
+        return ref_name(schema["$ref"]).lower().startswith("paginated")
+    props = schema.get("properties") or {}
+    if {"count", "results"}.issubset(props):
+        return True
+    path_tail = path.rstrip("/").rsplit("/", 1)[-1]
+    return "{" not in path_tail and path.endswith("/")
+
+
+def resource_method_name(
+    tag: str,
+    operation_id: str,
+    method: str,
+    path: str,
+    operation: dict,
+    used: set[str],
+) -> str:
+    """Строит публичное имя метода ресурса с учетом HTTP-семантики."""
+
+    name = operation_method_name(tag, operation_id, used=set())
+    if method == "GET" and name.startswith("list_") and not is_collection_get(path, operation):
+        name = "get_" + name.removeprefix("list_")
+    elif method == "GET" and name == "list" and not is_collection_get(path, operation):
+        name = "get"
+    base = name
+    counter = 2
+    while name in used:
+        name = f"{base}_{counter}"
+        counter += 1
+    used.add(name)
+    return name
+
+
 def all_params(path_item: dict, operation: dict) -> list[dict]:
     """Возвращает path-level и operation-level параметры."""
 
     return list(path_item.get("parameters") or []) + list(operation.get("parameters") or [])
+
+
+def method_doc_lines(
+    operation: dict,
+    operation_id: str,
+    params: list[dict],
+    body_name: str | None,
+    body_required: bool,
+) -> list[str]:
+    """Строит строки русскоязычной документации метода ресурса."""
+
+    summary = operation.get("summary")
+    description = operation.get("description")
+    first_line = doc_text(summary or description, fallback="")
+    if first_line:
+        lines = [f'        """{first_line}', ""]
+    else:
+        lines = ['        """']
+    if summary and description and description != summary:
+        lines.append(f"        {doc_text(description)}")
+        lines.append("")
+    documented_params = [param for param in params if param.get("in") != "body"]
+    if body_name:
+        body = next((param for param in params if param.get("in") == "body"), {})
+        request_body = operation.get("requestBody") or {}
+        documented_params.append(
+            {
+                "name": body_name,
+                "description": body.get("description") or request_body.get("description") or "Тело запроса.",
+                "required": body.get("required", body_required),
+                "in": body.get("in", "body"),
+            }
+        )
+    if documented_params:
+        for param in documented_params:
+            name = py_name(param.get("name") or "data")
+            place = param.get("in")
+            place_text = f", {place}" if place else ""
+            description_text = doc_text(param.get("description")).strip()
+            if description_text:
+                description_text = f"{description_text} "
+            lines.append(
+                f"        :param {name}: {description_text}({'обязательный' if param.get('required') else 'необязательный'}{place_text})."
+            )
+        lines.append("")
+    lines.append(f"        operationId: {operation_id}.")
+    lines.append('        """')
+    return lines
 
 
 def build_core_files(files: dict[str, str]) -> None:
@@ -486,51 +711,6 @@ def build_core_files(files: dict[str, str]) -> None:
 
         class EcstasyResponseValidationError(EcstasyError):
             """Ошибка валидации ответа API через Pydantic."""
-        ''')
-    files["ecstasy_sdk/filters.py"] = dedent('''\
-        """Query-фильтры SDK."""
-
-        from ecstasy_sdk.models.base import EcstasyModel
-
-
-        class DeviceListFilters(EcstasyModel):
-            """Фильтры списка устройств."""
-
-            group: str | None = None
-            vendor: str | None = None
-            model: str | None = None
-            ip: str | None = None
-            serial_number: str | None = None
-            os_version: str | None = None
-            port_scan_protocol: str | None = None
-            cmd_protocol: str | None = None
-            active: str | bool | None = None
-            collect_interfaces: str | bool | None = None
-            collect_mac_addresses: str | bool | None = None
-            collect_vlan_info: str | bool | None = None
-            collect_configurations: str | bool | None = None
-            connection_pool_size: str | int | None = None
-            name: str | None = None
-            return_fields: str | list[str] | None = None
-
-
-        class InterfaceListFilters(EcstasyModel):
-            """Фильтры списка интерфейсов устройства."""
-
-            current_status: str | bool | None = None
-            vlans: str | None = None
-            add_links: str | bool | None = None
-            add_comments: str | bool | None = None
-            add_zabbix_graph: str | bool | None = None
-
-
-        class End3TechDataFilters(EcstasyModel):
-            """Фильтры технических данных End3."""
-
-            house: str | None = None
-            block: str | None = None
-            tech_capability_status: str | None = None
-            street: str | None = None
         ''')
     files["ecstasy_sdk/pagination.py"] = dedent('''\
         """Утилиты пагинации SDK."""
@@ -814,8 +994,13 @@ def build_transport_files(files: dict[str, str]) -> None:
 def build_model_files(files: dict[str, str]) -> list[str]:
     """Генерирует Pydantic-схемы."""
 
+    uses_page = any(
+        "Page[" in schema_type(prop_schema, required=prop_name in set(schema.get("required") or []))
+        for schema in DEFINITIONS.values()
+        for prop_name, prop_schema in (schema.get("properties") or {}).items()
+    )
     schema_lines = [
-        '"""Pydantic-схемы, сгенерированные из docs/swagger.json."""',
+        '"""Pydantic-схемы, сгенерированные из OpenAPI-документации."""',
         "",
         "from __future__ import annotations",
         "",
@@ -824,15 +1009,18 @@ def build_model_files(files: dict[str, str]) -> list[str]:
         "from pydantic import Field",
         "",
         "from ecstasy_sdk.models.base import EcstasyModel",
-        "from ecstasy_sdk.models.common import Page",
-        "",
     ]
+    if uses_page:
+        schema_lines.append("from ecstasy_sdk.models.common import Page")
+    schema_lines.extend(["", ""])
     all_model_names = []
     for name, schema in DEFINITIONS.items():
         cls = class_name(name)
         all_model_names.append(cls)
         schema_lines.append(f"class {cls}(EcstasyModel):")
-        schema_lines.append(f'    """Схема `{name}` из Ecstasy API."""')
+        if docstring := schema_docstring(name, schema):
+            schema_lines.append(f'    """{docstring}"""')
+            schema_lines.append("")
         props = schema.get("properties") or {}
         required = set(schema.get("required") or [])
         if not props:
@@ -844,8 +1032,11 @@ def build_model_files(files: dict[str, str]) -> list[str]:
             typ = schema_type(prop_schema, required=prop_name in required)
             alias_needed = field_name != prop_name
             default = "..." if prop_name in required else "None"
-            if alias_needed:
-                schema_lines.append(f"    {field_name}: {typ} = Field({default}, alias={prop_name!r})")
+            description = prop_schema.get("description")
+            if alias_needed or (isinstance(description, str) and description.strip()):
+                schema_lines.append(
+                    f"    {field_name}: {typ} = Field({field_args(default, prop_schema, prop_name if alias_needed else None)})"
+                )
             elif prop_name in required:
                 schema_lines.append(f"    {field_name}: {typ}")
             else:
@@ -864,12 +1055,27 @@ def build_model_files(files: dict[str, str]) -> list[str]:
     schema_lines.append("")
     files["ecstasy_sdk/models/schemas.py"] = "\n".join(schema_lines)
 
-    for module, names in MODEL_MODULES.items():
-        exports = [class_name(name) for name in DEFINITIONS if name in names]
-        lines = [f'"""Модели SDK для группы `{module}`."""', "", "from ecstasy_sdk.models.schemas import ("]
-        for name in exports:
-            lines.append(f"    {name},")
-        lines.extend([")", "", "__all__ = ["])
+    refs_by_module: dict[str, set[str]] = {module: set() for module in TAG_MODULES.values()}
+    for path_item in PATHS.values():
+        for method, operation in path_item.items():
+            if method.lower() not in HTTP_METHODS:
+                continue
+            tag = (operation.get("tags") or ["Other"])[0]
+            module = TAG_MODULES.get(tag)
+            if module is None:
+                continue
+            for schema in operation_schemas(operation):
+                refs_by_module[module].update(collect_schema_refs(schema))
+
+    for module, names in refs_by_module.items():
+        exports = sorted(names & set(all_model_names), key=import_sort_key)
+        lines = [f'"""Модели SDK для группы `{module}`."""', ""]
+        if exports:
+            lines.append("from ecstasy_sdk.models.schemas import (")
+            for name in exports:
+                lines.append(f"    {name},")
+            lines.extend([")", ""])
+        lines.append("__all__ = [")
         for name in exports:
             lines.append(f"    {name!r},")
         lines.extend(["]", ""])
@@ -881,10 +1087,10 @@ def build_model_files(files: dict[str, str]) -> list[str]:
         "from ecstasy_sdk.models.common import EmptyResponse, Page, RawResponse",
         "from ecstasy_sdk.models.schemas import (",
     ]
-    for name in all_model_names:
+    for name in sorted(all_model_names, key=import_sort_key):
         init_lines.append(f"    {name},")
     init_lines.extend([")", "", "__all__ = [", '    "Page",', '    "RawResponse",', '    "EmptyResponse",'])
-    for name in all_model_names:
+    for name in sorted(all_model_names, key=import_sort_key):
         init_lines.append(f"    {name!r},")
     init_lines.extend(["]", ""])
     files["ecstasy_sdk/models/__init__.py"] = "\n".join(init_lines)
@@ -897,7 +1103,7 @@ def build_resource_files(files: dict[str, str]) -> int:
     ops_by_tag = {tag: [] for tag in TAG_MODULES}  # type: ignore
     for path, path_item in PATHS.items():
         for method, operation in path_item.items():
-            if method == "parameters":
+            if method.lower() not in HTTP_METHODS:
                 continue
             tag = (operation.get("tags") or ["Other"])[0]
             if tag in ops_by_tag:
@@ -912,6 +1118,8 @@ def build_resource_files(files: dict[str, str]) -> int:
         for is_async in [False, True]:
             class_name_res = "Async" + class_base if is_async else class_base
             used_model_names: set[str] = set()
+            uses_any = False
+            uses_list_alias = False
             for _, _, _, operation in operations:
                 body_name, body_type, _ = body_param(operation)
                 return_hint, response_expr = response_type(operation)
@@ -920,23 +1128,33 @@ def build_resource_files(files: dict[str, str]) -> int:
                     if body_name
                     else f"{return_hint} {response_expr}"
                 )
-                used_model_names.update(name for name in model_names if name in type_text)
-            model_import = (
-                "from ecstasy_sdk.models import (\n"
-                + "".join(f"    {name},\n" for name in sorted(used_model_names))
-                + ")\n"
-            )
+                used_model_names.update(type_names(type_text, model_names))
+                uses_any = uses_any or "Any" in re.findall(r"\b[A-Za-z_][A-Za-z0-9_]*\b", type_text)
+                uses_list_alias = uses_list_alias or "_list[" in type_text
+            model_import = ""
+            if used_model_names:
+                model_import = (
+                    "from ecstasy_sdk.models import (\n"
+                    + "".join(f"    {name},\n" for name in sorted(used_model_names, key=import_sort_key))
+                    + ")\n"
+                )
             transport_import = (
                 "from ecstasy_sdk.transport.async_ import AsyncTransport"
                 if is_async
                 else "from ecstasy_sdk.transport.sync import SyncTransport"
             )
-            lines = [
-                "from __future__ import annotations\n\n"
-                "from builtins import list as _list\n"
-                "from typing import Any\n\n"
-                f"{model_import}{transport_import}\n"
-            ]
+            lines = ["from __future__ import annotations", ""]
+            stdlib_imports = []
+            if uses_list_alias:
+                stdlib_imports.append("from builtins import list as _list")
+            if uses_any:
+                stdlib_imports.append("from typing import Any")
+            if stdlib_imports:
+                lines.extend(sorted(stdlib_imports))
+                lines.append("")
+            if model_import:
+                lines.append(model_import.rstrip())
+            lines.extend([transport_import, "", ""])
             transport_type = "AsyncTransport" if is_async else "SyncTransport"
             lines.append(f"class {class_name_res}:")
             lines.append(f'    """Ресурсный клиент Ecstasy API для группы `{tag}`."""')
@@ -949,7 +1167,7 @@ def build_resource_files(files: dict[str, str]) -> int:
             used: set[str] = set()
             for path, method, path_item, operation in operations:
                 operation_id = operation.get("operationId") or f"{method.lower()}_{path}"
-                method_name = operation_method_name(tag, operation_id, used)
+                method_name = resource_method_name(tag, operation_id, method, path, operation, used)
                 params = all_params(path_item, operation)
                 path_params = [param for param in params if param.get("in") == "path"]
                 query_params = [param for param in params if param.get("in") == "query"]
@@ -974,10 +1192,7 @@ def build_resource_files(files: dict[str, str]) -> int:
                 signature = ", ".join(signature_parts)
                 async_prefix = "async " if is_async else ""
                 lines.append(f"    {async_prefix}def {method_name}({signature}) -> {return_hint}:")
-                lines.append('        """Выполняет операцию Ecstasy API.')
-                lines.append("")
-                lines.append(f"        operationId: {operation_id}.")
-                lines.append('        """')
+                lines.extend(method_doc_lines(operation, operation_id, params, body_name, body_required))
                 lines.append("")
                 if path_params:
                     entries = ", ".join(
@@ -1005,9 +1220,7 @@ def build_resource_files(files: dict[str, str]) -> int:
             aliases = []
             if tag == "Accounts":
                 aliases = [
-                    ("get_myself", "list_myself"),
-                    ("get_permissions", "list_myself_permissions"),
-                    ("get_oidc_config", "list_oidc_config"),
+                    ("get_permissions", "get_myself_permissions"),
                 ]
             elif tag == "Devices":
                 aliases = [
@@ -1033,7 +1246,7 @@ def build_resource_files(files: dict[str, str]) -> int:
         is_async = package == "async_resources"
         lines = [f'"""{"Асинхронные" if is_async else "Синхронные"} ресурсные клиенты SDK."""', ""]
         all_exports = []
-        for tag, module in TAG_MODULES.items():
+        for tag, module in sorted(TAG_MODULES.items(), key=lambda item: item[1]):
             cls = ("Async" if is_async else "") + TAG_CLASSES[tag]
             lines.append(f"from ecstasy_sdk.{package}.{module} import {cls}")
             all_exports.append(cls)
@@ -1057,7 +1270,7 @@ def build_client_files(files: dict[str, str]) -> None:
         "",
         "from ecstasy_sdk.config import EcstasyConfig",
     ]
-    for tag, module in TAG_MODULES.items():
+    for tag, module in sorted(TAG_MODULES.items(), key=lambda item: item[1]):
         sync_lines.append(f"from ecstasy_sdk.resources.{module} import {TAG_CLASSES[tag]}")
     sync_lines.append("from ecstasy_sdk.transport.sync import SyncTransport")
     sync_lines.extend(["", "", "class EcstasyClient:", '    """Синхронный клиент Ecstasy API."""', ""])
@@ -1105,10 +1318,10 @@ def build_client_files(files: dict[str, str]) -> None:
         "import httpx",
         "from pydantic import SecretStr",
         "",
-        "from ecstasy_sdk.config import EcstasyConfig",
     ]
-    for tag, module in TAG_MODULES.items():
+    for tag, module in sorted(TAG_MODULES.items(), key=lambda item: item[1]):
         async_lines.append(f"from ecstasy_sdk.async_resources.{module} import Async{TAG_CLASSES[tag]}")
+    async_lines.append("from ecstasy_sdk.config import EcstasyConfig")
     async_lines.append("from ecstasy_sdk.transport.async_ import AsyncTransport")
     async_lines.extend(["", "", "class AsyncEcstasyClient:", '    """Асинхронный клиент Ecstasy API."""', ""])
     async_lines.append(
